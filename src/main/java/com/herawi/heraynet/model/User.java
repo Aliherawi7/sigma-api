@@ -1,8 +1,7 @@
 package com.herawi.heraynet.model;
 
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -16,8 +15,10 @@ public class User {
     private LocalDate dob;
     private LocalDateTime joinedDate;
     private boolean isActive;
+    @Column(unique = true, nullable = false)
     private String email;
     private String password;
+    @Column(unique = true,nullable = false)
     private String phoneNumber;
     private String userName;
     private boolean accountLocked;
