@@ -4,7 +4,10 @@ package com.herawi.heraynet.model;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 
 @Entity
 @Table(
@@ -13,7 +16,7 @@ import java.util.Date;
                 @UniqueConstraint(name = "user_phoneNumber_unique", columnNames = "phoneNumber")
         }
 )
-public class User {
+public class Person {
     @Id
     private long id;
     private String name;
@@ -21,24 +24,27 @@ public class User {
     private LocalDate dob;
     private LocalDateTime joinedDate;
     private boolean isActive;
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
     private String password;
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String phoneNumber;
     private String userName;
     private boolean accountLocked;
     private int failedAttempt;
     private Date lockTime;
     private String location;
+    @ManyToMany(fetch =FetchType.EAGER)
+    private Collection<Person> connections = new HashSet<>();
 
-    public User(long id) {
+
+    public Person(long id) {
         this.id = id;
     }
-    public User() {
+    public Person() {
     }
 
-    public User(long id, String name, String lastName, LocalDate dob, boolean isActive, String email, String password, String phoneNumber, String userName, boolean accountLocked, int failedAttempt, Date lockTime, String location) {
+    public Person(long id, String name, String lastName, LocalDate dob, boolean isActive, String email, String password, String phoneNumber, String userName, boolean accountLocked, int failedAttempt, Date lockTime, String location) {
         this.id = id;
         this.name = name;
         this.lastName = lastName;
@@ -170,4 +176,21 @@ public class User {
     public int getAge(){
         return LocalDate.now().getYear() - dob.getYear();
     }
+
+    public Collection<Person> getConnections() {
+        return connections;
+    }
+
+    public void setConnections(Collection<Person> connections) {
+        this.connections = connections;
+    }
+
+    public void addPersonToConnections(Person person){
+        connections.add(person);
+    }
+
+    public boolean removePersonFromConnections(Person p){
+        return connections.remove(p);
+    }
+
 }
