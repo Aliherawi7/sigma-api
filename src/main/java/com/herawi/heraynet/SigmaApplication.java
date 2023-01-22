@@ -7,7 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootApplication
 
-public class HeraynetApplication {
+public class SigmaApplication {
 
 
 	@Bean
@@ -16,7 +16,7 @@ public class HeraynetApplication {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(HeraynetApplication.class, args);
+		SpringApplication.run(SigmaApplication.class, args);
 	}
 
 
