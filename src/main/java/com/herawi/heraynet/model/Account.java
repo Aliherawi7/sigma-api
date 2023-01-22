@@ -36,6 +36,7 @@ public class Person {
     private String location;
     @ManyToMany(fetch =FetchType.EAGER)
     private Collection<Person> connections = new HashSet<>();
+    private char gender;
 
 
     public Person(long id) {
@@ -44,12 +45,12 @@ public class Person {
     public Person() {
     }
 
-    public Person(long id, String name, String lastName, LocalDate dob, boolean isActive, String email, String password, String phoneNumber, String userName, boolean accountLocked, int failedAttempt, Date lockTime, String location) {
+    public Person(long id, String name, String lastName, LocalDate dob, LocalDateTime joinedDate, boolean isActive, String email, String password, String phoneNumber, String userName, boolean accountLocked, int failedAttempt, Date lockTime, String location, Collection<Person> connections, char gender) {
         this.id = id;
         this.name = name;
         this.lastName = lastName;
         this.dob = dob;
-        this.joinedDate = LocalDateTime.now();
+        this.joinedDate = joinedDate;
         this.isActive = isActive;
         this.email = email;
         this.password = password;
@@ -59,6 +60,8 @@ public class Person {
         this.failedAttempt = failedAttempt;
         this.lockTime = lockTime;
         this.location = location;
+        this.connections = connections;
+        this.gender = gender;
     }
 
     public long getId() {
@@ -193,4 +196,11 @@ public class Person {
         return connections.remove(p);
     }
 
+    public char getGender() {
+        return gender;
+    }
+
+    public void setGender(char gender) {
+        this.gender = gender;
+    }
 }
