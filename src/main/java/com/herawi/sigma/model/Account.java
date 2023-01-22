@@ -4,7 +4,6 @@ package com.herawi.heraynet.model;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -16,7 +15,7 @@ import java.util.HashSet;
                 @UniqueConstraint(name = "user_phoneNumber_unique", columnNames = "phoneNumber")
         }
 )
-public class Person {
+public class Account {
     @Id
     private long id;
     private String name;
@@ -35,17 +34,17 @@ public class Person {
     private Date lockTime;
     private String location;
     @ManyToMany(fetch =FetchType.EAGER)
-    private Collection<Person> connections = new HashSet<>();
+    private Collection<Account> connections = new HashSet<>();
     private char gender;
 
 
-    public Person(long id) {
+    public Account(long id) {
         this.id = id;
     }
-    public Person() {
+    public Account() {
     }
 
-    public Person(long id, String name, String lastName, LocalDate dob, LocalDateTime joinedDate, boolean isActive, String email, String password, String phoneNumber, String userName, boolean accountLocked, int failedAttempt, Date lockTime, String location, Collection<Person> connections, char gender) {
+    public Account(long id, String name, String lastName, LocalDate dob, LocalDateTime joinedDate, boolean isActive, String email, String password, String phoneNumber, String userName, boolean accountLocked, int failedAttempt, Date lockTime, String location, Collection<Account> connections, char gender) {
         this.id = id;
         this.name = name;
         this.lastName = lastName;
@@ -180,19 +179,19 @@ public class Person {
         return LocalDate.now().getYear() - dob.getYear();
     }
 
-    public Collection<Person> getConnections() {
+    public Collection<Account> getConnections() {
         return connections;
     }
 
-    public void setConnections(Collection<Person> connections) {
+    public void setConnections(Collection<Account> connections) {
         this.connections = connections;
     }
 
-    public void addPersonToConnections(Person person){
-        connections.add(person);
+    public void addAccountToConnections(Account account){
+        connections.add(account);
     }
 
-    public boolean removePersonFromConnections(Person p){
+    public boolean removeAccountFromConnections(Account p){
         return connections.remove(p);
     }
 
