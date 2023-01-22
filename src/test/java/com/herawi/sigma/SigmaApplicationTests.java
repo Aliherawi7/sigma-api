@@ -1,4 +1,4 @@
-package com.herawi.heraynet;
+package com.herawi.sigma;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

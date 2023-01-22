@@ -1,6 +1,6 @@
-package com.herawi.heraynet.repository;
+package com.herawi.sigma.repository;
 
-import com.herawi.heraynet.model.Account;
+import com.herawi.sigma.model.Account;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Collection;

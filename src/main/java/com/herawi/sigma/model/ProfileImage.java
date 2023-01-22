@@ -1,4 +1,4 @@
-package com.herawi.heraynet.model;
+package com.herawi.sigma.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

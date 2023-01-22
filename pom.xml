@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.herawi</groupId>
-	<artifactId>heraynet</artifactId>
+	<artifactId>sigma</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>heraynet</name>
+	<name>sigma</name>
 	<description>social network for test</description>
 	<properties>
 		<java.version>1.8</java.version>

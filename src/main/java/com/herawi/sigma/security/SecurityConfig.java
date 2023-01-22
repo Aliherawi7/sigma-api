@@ -1,4 +1,4 @@
-package com.herawi.heraynet.security;
+package com.herawi.sigma.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;

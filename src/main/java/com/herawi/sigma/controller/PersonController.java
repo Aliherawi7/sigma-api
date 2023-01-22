@@ -1,6 +1,6 @@
-package com.herawi.heraynet.controller;
+package com.herawi.sigma.controller;
 
-import com.herawi.heraynet.service.AccountService;
+import com.herawi.sigma.service.AccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

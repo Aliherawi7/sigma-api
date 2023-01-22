@@ -1,7 +1,7 @@
-package com.herawi.heraynet.service;
+package com.herawi.sigma.service;
 
-import com.herawi.heraynet.model.Account;
-import com.herawi.heraynet.repository.AccountRepository;
+import com.herawi.sigma.model.Account;
+import com.herawi.sigma.repository.AccountRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
