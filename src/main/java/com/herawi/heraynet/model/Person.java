@@ -7,6 +7,12 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(name = "user_email_unique", columnNames = "email"),
+                @UniqueConstraint(name = "user_phoneNumber_unique", columnNames = "phoneNumber")
+        }
+)
 public class User {
     @Id
     private long id;
@@ -15,10 +21,10 @@ public class User {
     private LocalDate dob;
     private LocalDateTime joinedDate;
     private boolean isActive;
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String email;
     private String password;
-    @Column(unique = true,nullable = false)
+    @Column(nullable = false)
     private String phoneNumber;
     private String userName;
     private boolean accountLocked;
