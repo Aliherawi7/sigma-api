@@ -37,7 +37,7 @@ public class AccountService implements UserDetailsService {
         return null;
     }
 
-    public boolean addAccount(Account account, MultipartFile profileImg) throws Exception {
+    public boolean addAccount(Account account, byte[] imageBytes) throws Exception {
         if(account != null){
             if(account.getAge() < 18){
                 throw new Exception("The user age must be above 18 years old!!!");
@@ -48,7 +48,7 @@ public class AccountService implements UserDetailsService {
             // encode password before saving in database
             account.setPassword(bCryptPasswordEncoder.encode(account.getPassword()));
             accountRepository.save(account);
-            ProfileImage profileImage = new ProfileImage(accountRepository.findByEmail(account.getEmail()).getId(), profileImg.getBytes());
+            ProfileImage profileImage = new ProfileImage(accountRepository.findByEmail(account.getEmail()).getId(), imageBytes);
             profileImageRepository.save(profileImage);
             return true;
         }
@@ -90,12 +90,15 @@ public class AccountService implements UserDetailsService {
     * */
     public AccountInfo getAccount(String email){
         Account account = accountRepository.findByEmail(email);
+        if(account == null){
+            return null;
+        }
         ProfileImage profileImage = profileImageRepository.findById(account.getId()).orElse(new ProfileImage());
-        MockMultipartFile file = new MockMultipartFile(account.getName(), profileImage.getImage());
+
         return new AccountInfo(
                 account.getName(),
                 account.getLastName(),
-                file,
+                profileImage.getImage(),
                 account.getEmail(),
                 account.getConnections().size()
         );
@@ -109,11 +112,10 @@ public class AccountService implements UserDetailsService {
         Collection<AccountInfo> connections = new ArrayList<>();
         currentAccount.getConnections().forEach(account -> {
             ProfileImage profileImage = profileImageRepository.findById(account.getId()).orElse(new ProfileImage());
-            MockMultipartFile file = new MockMultipartFile(account.getName(), profileImage.getImage());
             connections.add(new AccountInfo(
                     account.getName(),
                     account.getLastName(),
-                    file,
+                    profileImage.getImage(),
                     account.getEmail(),
                     account.getConnections().size()
             ));
@@ -138,11 +140,5 @@ public class AccountService implements UserDetailsService {
     }
 
 
-
-
-
-
-
-
-
+    
 }
