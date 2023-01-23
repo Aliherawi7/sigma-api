@@ -6,14 +6,14 @@ public class AccountInfo {
 
     private String name;
     private String lastName;
-    private MultipartFile profileImage;
+    private byte[] profileImage;
     private String email;
     private long connections;
 
     public AccountInfo() {
     }
 
-    public AccountInfo(String name, String lastName, MultipartFile profileImage, String email, long connections) {
+    public AccountInfo(String name, String lastName, byte[] profileImage, String email, long connections) {
         this.name = name;
         this.lastName = lastName;
         this.profileImage = profileImage;
@@ -37,11 +37,11 @@ public class AccountInfo {
         this.lastName = lastName;
     }
 
-    public MultipartFile getProfileImage() {
+    public byte[] getProfileImage() {
         return profileImage;
     }
 
-    public void setProfileImage(MultipartFile profileImage) {
+    public void setProfileImage(byte[] profileImage) {
         this.profileImage = profileImage;
     }
 
