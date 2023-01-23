@@ -1,15 +1,20 @@
 package com.herawi.sigma.service;
 
+import com.herawi.sigma.dto.AccountInfo;
 import com.herawi.sigma.model.Account;
 import com.herawi.sigma.model.ProfileImage;
 import com.herawi.sigma.repository.AccountRepository;
 import com.herawi.sigma.repository.ProfileImageRepository;
+import com.herawi.sigma.tools.JWTTools;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import javax.servlet.http.HttpServletRequest;
+
 
 @Service
 public class AccountService implements UserDetailsService {
@@ -73,7 +78,19 @@ public class AccountService implements UserDetailsService {
         return false;
     }
 
-    public
+    public AccountInfo getAccount(HttpServletRequest request){
+        String email = JWTTools.getUserEmailByJWT(request);
+        Account account = accountRepository.findByEmail(email);
+        ProfileImage profileImage = profileImageRepository.findById(account.getId()).orElse(new ProfileImage());
+        MockMultipartFile file = new MockMultipartFile(account.getName(), profileImage.getImage());
+        return new AccountInfo(
+                account.getName(),
+                account.getLastName(),
+                file,
+                account.getEmail(),
+                account.getConnections().size()
+        );
+    }
 
 
 
