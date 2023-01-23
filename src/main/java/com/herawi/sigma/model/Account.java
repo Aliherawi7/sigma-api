@@ -38,18 +38,22 @@ public class Account {
     private char gender;
 
 
-    public Account(long id) {
-        this.id = id;
-    }
+
+
     public Account() {
+        this.joinedDate = LocalDateTime.now();
     }
 
-    public Account(long id, String name, String lastName, LocalDate dob, LocalDateTime joinedDate, boolean isActive, String email, String password, String phoneNumber, String userName, boolean accountLocked, int failedAttempt, Date lockTime, String location, Collection<Account> connections, char gender) {
+    public Account(long id, String name, String lastName,
+                   LocalDate dob, boolean isActive, String email,
+                   String password, String phoneNumber, String userName,
+                   boolean accountLocked, int failedAttempt, Date lockTime,
+                   String location, char gender) {
         this.id = id;
         this.name = name;
         this.lastName = lastName;
         this.dob = dob;
-        this.joinedDate = joinedDate;
+        this.joinedDate = LocalDateTime.now();
         this.isActive = isActive;
         this.email = email;
         this.password = password;
@@ -59,7 +63,6 @@ public class Account {
         this.failedAttempt = failedAttempt;
         this.lockTime = lockTime;
         this.location = location;
-        this.connections = connections;
         this.gender = gender;
     }
 
