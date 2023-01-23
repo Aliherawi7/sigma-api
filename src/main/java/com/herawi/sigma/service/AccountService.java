@@ -14,6 +14,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Collection;
 
 
 @Service
@@ -80,6 +82,13 @@ public class AccountService implements UserDetailsService {
 
     public AccountInfo getAccount(HttpServletRequest request){
         String email = JWTTools.getUserEmailByJWT(request);
+        return getAccount(email);
+    }
+
+    /*
+    * find account by email and return its information by accountInfo dto
+    * */
+    public AccountInfo getAccount(String email){
         Account account = accountRepository.findByEmail(email);
         ProfileImage profileImage = profileImageRepository.findById(account.getId()).orElse(new ProfileImage());
         MockMultipartFile file = new MockMultipartFile(account.getName(), profileImage.getImage());
@@ -91,6 +100,43 @@ public class AccountService implements UserDetailsService {
                 account.getConnections().size()
         );
     }
+    /*
+    * find all connections of this account
+    * */
+    public Collection<AccountInfo> getAllConnections(HttpServletRequest request){
+        String email = JWTTools.getUserEmailByJWT(request);
+        Account currentAccount = accountRepository.findByEmail(email);
+        Collection<AccountInfo> connections = new ArrayList<>();
+        currentAccount.getConnections().forEach(account -> {
+            ProfileImage profileImage = profileImageRepository.findById(account.getId()).orElse(new ProfileImage());
+            MockMultipartFile file = new MockMultipartFile(account.getName(), profileImage.getImage());
+            connections.add(new AccountInfo(
+                    account.getName(),
+                    account.getLastName(),
+                    file,
+                    account.getEmail(),
+                    account.getConnections().size()
+            ));
+        });
+        return connections;
+    }
+
+    /*
+    * add someone as connection
+    * */
+
+    public boolean addAsConnection(HttpServletRequest request, String targetEmail){
+        String email = JWTTools.getUserEmailByJWT(request);
+        Account account = accountRepository.findByEmail(email);
+        Account targetAccount = accountRepository.findByEmail(targetEmail);
+        if(account == null || targetAccount == null)
+            return false;
+
+        account.addAccountToConnections(targetAccount);
+        accountRepository.save(account);
+        return true;
+    }
+
 
 
 
