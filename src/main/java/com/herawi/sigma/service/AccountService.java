@@ -1,21 +1,28 @@
 package com.herawi.sigma.service;
 
 import com.herawi.sigma.model.Account;
+import com.herawi.sigma.model.ProfileImage;
 import com.herawi.sigma.repository.AccountRepository;
+import com.herawi.sigma.repository.ProfileImageRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class AccountService implements UserDetailsService {
     private final AccountRepository accountRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final ProfileImageRepository profileImageRepository;
 
-    public AccountService(AccountRepository accountRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public AccountService(AccountRepository accountRepository,
+                          BCryptPasswordEncoder bCryptPasswordEncoder,
+                          ProfileImageRepository profileImageRepository) {
         this.accountRepository = accountRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.profileImageRepository = profileImageRepository;
     }
 
     @Override
@@ -23,7 +30,7 @@ public class AccountService implements UserDetailsService {
         return null;
     }
 
-    public boolean addAccount(Account account) throws Exception {
+    public boolean addAccount(Account account, MultipartFile profileImg) throws Exception {
         if(account != null){
             if(account.getAge() < 18){
                 throw new Exception("The user age must be above 18 years old!!!");
@@ -34,6 +41,8 @@ public class AccountService implements UserDetailsService {
             // encode password before saving in database
             account.setPassword(bCryptPasswordEncoder.encode(account.getPassword()));
             accountRepository.save(account);
+            ProfileImage profileImage = new ProfileImage(accountRepository.findByEmail(account.getEmail()).getId(), profileImg.getBytes());
+            profileImageRepository.save(profileImage);
             return true;
         }
         return false;
@@ -52,7 +61,7 @@ public class AccountService implements UserDetailsService {
 
     public boolean deleteAccount(String userName, String email, String password) throws Exception {
         if(accountRepository.existsByEmailOrPhoneNumber(email, userName)){
-            Account p = accountRepository.getPersonByEmail(email);
+            Account p = accountRepository.findByEmail(email);
             boolean arePasswordsMatched = bCryptPasswordEncoder.matches(password, p.getPassword());
             if(arePasswordsMatched){
                 accountRepository.delete(p);
@@ -63,6 +72,11 @@ public class AccountService implements UserDetailsService {
         }
         return false;
     }
+
+    public
+
+
+
 
 
 
