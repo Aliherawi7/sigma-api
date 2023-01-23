@@ -8,11 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("api/person")
-public class PersonController {
+public class AccountController {
 
     private final AccountService accountService;
 
-    public PersonController(AccountService accountService) {
+    public AccountController(AccountService accountService) {
         this.accountService = accountService;
     }
 
