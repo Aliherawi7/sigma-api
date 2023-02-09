@@ -1,6 +1,6 @@
 package com.herawi.sigma.controller;
 
-import com.herawi.sigma.dto.AccountInfo;
+import com.herawi.sigma.dto.AccountDTO;
 import com.herawi.sigma.service.AccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +21,7 @@ public class AccountController {
 
     @GetMapping
     public ResponseEntity<?> getUser(HttpServletRequest request){
-        AccountInfo accountInfo = accountService.getAccount(request);
+        AccountDTO accountInfo = accountService.getAccount(request);
         if(accountInfo != null){
             return ResponseEntity.ok().body(accountInfo);
         }
@@ -29,7 +29,7 @@ public class AccountController {
     }
     @GetMapping("/{email}")
     public ResponseEntity<?> getUsers(@PathVariable String email){
-        AccountInfo accountInfo = accountService.getAccount(email);
+        AccountDTO accountInfo = accountService.getAccount(email);
         if(accountInfo != null){
             return ResponseEntity.ok().body(accountInfo);
         }
