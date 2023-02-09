@@ -1,18 +1,16 @@
 package com.herawi.sigma.service;
 
-import com.herawi.sigma.dto.AccountInfo;
+import com.herawi.sigma.dto.AccountDTO;
 import com.herawi.sigma.model.Account;
 import com.herawi.sigma.model.ProfileImage;
 import com.herawi.sigma.repository.AccountRepository;
 import com.herawi.sigma.repository.ProfileImageRepository;
 import com.herawi.sigma.tools.JWTTools;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -80,7 +78,7 @@ public class AccountService implements UserDetailsService {
         return false;
     }
 
-    public AccountInfo getAccount(HttpServletRequest request){
+    public AccountDTO getAccount(HttpServletRequest request){
         String email = JWTTools.getUserEmailByJWT(request);
         return getAccount(email);
     }
@@ -88,14 +86,14 @@ public class AccountService implements UserDetailsService {
     /*
     * find account by email and return its information by accountInfo dto
     * */
-    public AccountInfo getAccount(String email){
+    public AccountDTO getAccount(String email){
         Account account = accountRepository.findByEmail(email);
         if(account == null){
             return null;
         }
         ProfileImage profileImage = profileImageRepository.findById(account.getId()).orElse(new ProfileImage());
 
-        return new AccountInfo(
+        return new AccountDTO(
                 account.getName(),
                 account.getLastName(),
                 profileImage.getImage(),
@@ -106,19 +104,13 @@ public class AccountService implements UserDetailsService {
     /*
     * find all connections of this account
     * */
-    public Collection<AccountInfo> getAllConnections(HttpServletRequest request){
+    public Collection<AccountDTO> getAllConnections(HttpServletRequest request){
         String email = JWTTools.getUserEmailByJWT(request);
         Account currentAccount = accountRepository.findByEmail(email);
-        Collection<AccountInfo> connections = new ArrayList<>();
+        Collection<AccountDTO> connections = new ArrayList<>();
         currentAccount.getConnections().forEach(account -> {
             ProfileImage profileImage = profileImageRepository.findById(account.getId()).orElse(new ProfileImage());
-            connections.add(new AccountInfo(
-                    account.getName(),
-                    account.getLastName(),
-                    profileImage.getImage(),
-                    account.getEmail(),
-                    account.getConnections().size()
-            ));
+            connections.add(AccountDTOMapper.apply(currentAccount, profileImage));
         });
         return connections;
     }
@@ -140,5 +132,5 @@ public class AccountService implements UserDetailsService {
     }
 
 
-    
+
 }
