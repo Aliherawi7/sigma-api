@@ -2,7 +2,7 @@ package com.herawi.sigma.dto;
 
 import org.springframework.web.multipart.MultipartFile;
 
-public class AccountInfo {
+public class AccountDTO {
 
     private String name;
     private String lastName;
@@ -10,10 +10,10 @@ public class AccountInfo {
     private String email;
     private long connections;
 
-    public AccountInfo() {
+    public AccountDTO() {
     }
 
-    public AccountInfo(String name, String lastName, byte[] profileImage, String email, long connections) {
+    public AccountDTO(String name, String lastName, byte[] profileImage, String email, long connections) {
         this.name = name;
         this.lastName = lastName;
         this.profileImage = profileImage;
