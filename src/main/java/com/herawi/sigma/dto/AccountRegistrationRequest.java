@@ -1,5 +1,7 @@
 package com.herawi.sigma.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDate;
 
 public class AccountRegistrationRequest {
@@ -8,16 +10,18 @@ public class AccountRegistrationRequest {
     private String email;
     private String password;
     private LocalDate dob;
+    private MultipartFile img;
 
     public AccountRegistrationRequest() {
     }
 
-    public AccountRegistrationRequest(String name, String lastName, String email, String password, LocalDate dob) {
+    public AccountRegistrationRequest(String name, String lastName, String email, String password, String dob, MultipartFile img) {
         this.name = name;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        this.dob = dob;
+        this.dob = LocalDate.parse(dob);
+        this.img = img;
     }
 
     public String getName() {
@@ -56,7 +60,15 @@ public class AccountRegistrationRequest {
         return dob;
     }
 
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
+    public void setDob(String dob) {
+        this.dob = LocalDate.parse(dob);
+    }
+
+    public MultipartFile getImg() {
+        return img;
+    }
+
+    public void setImg(MultipartFile img) {
+        this.img = img;
     }
 }
