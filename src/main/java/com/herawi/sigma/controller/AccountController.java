@@ -1,22 +1,33 @@
 package com.herawi.sigma.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.herawi.sigma.dto.AccountDTO;
+import com.herawi.sigma.dto.AccountRegistrationRequest;
 import com.herawi.sigma.service.AccountService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping("api/account")
+@RequestMapping("api/accounts")
 public class AccountController {
 
     private final AccountService accountService;
-
+    @Autowired
     public AccountController(AccountService accountService) {
         this.accountService = accountService;
+    }
+
+    @PostMapping()
+    public ResponseEntity<?> addAccount(@ModelAttribute AccountRegistrationRequest accountRegistrationRequest) throws Exception {
+        if(accountService.addAccount(accountRegistrationRequest)){
+            return new ResponseEntity<>("successfully saved", HttpStatus.CREATED);
+        }else {
+            return new ResponseEntity<>("invalid parameter", HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @GetMapping
@@ -34,6 +45,10 @@ public class AccountController {
             return ResponseEntity.ok().body(accountInfo);
         }
         return ResponseEntity.noContent().build();
+    }
+    @GetMapping("all")
+    public ResponseEntity<?> getAll(){
+        return ResponseEntity.ok().body(accountService.getAllAccount());
     }
 
 }
