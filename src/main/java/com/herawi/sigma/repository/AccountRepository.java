@@ -8,7 +8,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Account findByEmail(String email);
     Account findByUserName(String userName);
     Collection<Account> findAllByNameOrLastName(String name, String lastName);
-    boolean existsByEmailOrPhoneNumber(String email, String phoneNumber);
+    boolean existsByEmail(String email);
     boolean existsByEmailOrUserName(String email, String userName);
 
 }
