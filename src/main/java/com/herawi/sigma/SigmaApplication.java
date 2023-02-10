@@ -26,22 +26,22 @@ public class SigmaApplication {
 		SpringApplication.run(SigmaApplication.class, args);
 	}
 
-	@Bean
-	CommandLineRunner run(AccountService accountService){
-
-		return args -> {
-			Account account = new Account(
-					1L, "Ali", "Herawi", LocalDate.of(2000,3,12),
-					true, "aliherawi7@gmail.com","12345","0797608705",
-					"aliherawi7",false, 0, null, "Afg",
-					'M'
-			);
-			File file1 = new File("src/main/resources/templates/images/ProfileImages/user1.jpg");
-			FileInputStream fis = new FileInputStream(file1);
-			byte[] file1Bytes = new byte[(int) file1.length()];
-			accountService.addAccount(account, file1Bytes);
-		};
-	}
+//	@Bean
+//	CommandLineRunner run(AccountService accountService){
+//
+//		return args -> {
+//			Account account = new Account(
+//					1L, "Ali", "Herawi", LocalDate.of(2000,3,12),
+//					true, "aliherawi7@gmail.com","12345","0797608705",
+//					"aliherawi7",false, 0, null, "Afg",
+//					'M'
+//			);
+//			File file1 = new File("src/main/resources/templates/images/ProfileImages/user1.jpg");
+//			FileInputStream fis = new FileInputStream(file1);
+//			byte[] file1Bytes = new byte[(int) file1.length()];
+//			accountService.addAccount(account, file1Bytes);
+//		};
+//	}
 
 
 
