@@ -1,14 +1,13 @@
 package com.herawi.sigma.dto;
 
-import org.springframework.web.multipart.MultipartFile;
 
 public class AccountDTO {
 
     private String name;
     private String lastName;
-    private byte[] profileImage;
     private String email;
     private long connections;
+    private byte[] profileImage;
 
     public AccountDTO() {
     }
