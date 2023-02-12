@@ -1,8 +1,11 @@
 package com.herawi.sigma.filter;
 
+import com.herawi.sigma.constants.Gender;
 import com.herawi.sigma.dto.AccountRegistrationRequest;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,32 +14,35 @@ import java.util.regex.Pattern;
 public class AccountRegistrationRequestFilter {
 
     public static FilterResponse filter(AccountRegistrationRequest accountRegistrationRequest) {
-        ArrayList<String> failedFields = new ArrayList<>();
+        Map<String, String> failedFields = new HashMap<>();
         if (accountRegistrationRequest.getName() == null ||
                 accountRegistrationRequest.getLastName() == null ||
                 accountRegistrationRequest.getDob() == null ||
                 accountRegistrationRequest.getEmail() == null ||
                 accountRegistrationRequest.getPassword() == null) {
-            failedFields.add("the fields should not be empty");
+            failedFields.put("error_message","the fields should not be empty");
             return new FilterResponse(failedFields, false);
         }
 //        boolean isNameAndLastNameAreValid = filterNameOrLastName(accountRegistrationRequest.getName())
 //                && filterNameOrLastName(accountRegistrationRequest.getLastName());
         if(!filterNameOrLastName(accountRegistrationRequest.getName())){
-            failedFields.add("Invalid name");
+            failedFields.put("name","Invalid name, name should have at least 3 characters");
         }
         if(!filterNameOrLastName(accountRegistrationRequest.getLastName())){
-            failedFields.add("Invalid lastName");
+            failedFields.put("lastName","Invalid lastName, last name should have at least 3 characters");
+        }
+        if(!filterGender(accountRegistrationRequest.getGender())){
+            failedFields.put("gender","Invalid gender type, Gender should be (male) or (female)");
         }
 
         if(!filterEmail(accountRegistrationRequest.getEmail())){
-            failedFields.add("Invalid email");
+            failedFields.put("email","Invalid email");
         }
         if(!filterDOB(accountRegistrationRequest.getDob())){
-            failedFields.add("age should be 18 or higher");
+            failedFields.put("dob", "age should be 18 or higher");
         }
         if(!filterPassword(accountRegistrationRequest.getPassword())){
-            failedFields.add("invalid password. password should contain numbers," +
+            failedFields.put("password","invalid password. password should contain numbers," +
                     " letters, and character. and has at least 8 characters");
         }
         if(failedFields.size()>0){
@@ -65,6 +71,14 @@ public class AccountRegistrationRequestFilter {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
+    }
+    public static boolean filterGender(Gender gender){
+        if (gender != null){
+            return Arrays.stream(Gender.values()).anyMatch(item -> item.name().equals(gender.getValue()));
+        }else {
+            return false;
+        }
+
     }
 }
 
