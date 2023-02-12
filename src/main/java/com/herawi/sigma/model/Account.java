@@ -44,7 +44,7 @@ public class Account {
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Role> roles = new ArrayList<>();
 
 
