@@ -1,23 +1,27 @@
 package com.herawi.sigma.dto;
 
 
+import com.herawi.sigma.constants.Gender;
+
 public class AccountDTO {
 
     private String name;
     private String lastName;
     private String email;
     private long connections;
+    private Gender gender;
     private byte[] profileImage;
 
     public AccountDTO() {
     }
 
-    public AccountDTO(String name, String lastName, byte[] profileImage, String email, long connections) {
+    public AccountDTO(String name, String lastName, byte[] profileImage, String email, long connections, Gender gender) {
         this.name = name;
         this.lastName = lastName;
         this.profileImage = profileImage;
         this.email = email;
         this.connections = connections;
+        this.gender = gender;
     }
 
     public String getName() {
@@ -43,7 +47,6 @@ public class AccountDTO {
     public void setProfileImage(byte[] profileImage) {
         this.profileImage = profileImage;
     }
-
     public String getEmail() {
         return email;
     }
@@ -58,5 +61,13 @@ public class AccountDTO {
 
     public void setConnections(long connections) {
         this.connections = connections;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 }
