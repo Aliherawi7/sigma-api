@@ -1,21 +1,21 @@
 package com.herawi.sigma.filter;
 
-import java.util.ArrayList;
+import java.util.Map;
 
 public class FilterResponse {
-    ArrayList<String> failedFields;
+    Map<String, String> failedFields;
     boolean isOk;
 
-    public FilterResponse(ArrayList<String> failedFields, boolean isOk) {
+    public FilterResponse(Map<String, String> failedFields, boolean isOk) {
         this.failedFields = failedFields;
         this.isOk = isOk;
     }
 
-    public ArrayList<String> getFailedFields() {
+    public Map<String, String> getFailedFields() {
         return failedFields;
     }
 
-    public void setFailedFields(ArrayList<String> failedFields) {
+    public void setFailedFields(Map<String, String> failedFields) {
         this.failedFields = failedFields;
     }
 
