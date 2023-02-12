@@ -14,12 +14,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class CustomeAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AccountService accountService;
     private final AuthenticationManager authenticationManager;
 
-    public CustomeAuthenticationFilter(AccountService accountService, AuthenticationManager authenticationManager) {
+    public CustomAuthenticationFilter(AccountService accountService, AuthenticationManager authenticationManager) {
         this.accountService = accountService;
         this.authenticationManager = authenticationManager;
     }
@@ -32,7 +32,6 @@ public class CustomeAuthenticationFilter extends UsernamePasswordAuthenticationF
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 new UsernamePasswordAuthenticationToken(email, password);
         return authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-
     }
 
     @Override
@@ -42,6 +41,9 @@ public class CustomeAuthenticationFilter extends UsernamePasswordAuthenticationF
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        super.unsuccessfulAuthentication(request, response, failed);
+        System.out.println("unsuccessful attempt");
+        //super.unsuccessfulAuthentication(request, response, failed);
+        response.setHeader("error", "go nakhor");
+        response.getWriter().println("go nakhor bachim");
     }
 }
