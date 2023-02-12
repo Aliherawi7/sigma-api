@@ -1,7 +1,8 @@
 package com.herawi.sigma.dto;
 
-import org.springframework.web.multipart.MultipartFile;
 
+import com.herawi.sigma.constants.Gender;
+import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 
 public class AccountRegistrationRequest {
@@ -10,18 +11,21 @@ public class AccountRegistrationRequest {
     private String email;
     private String password;
     private LocalDate dob;
+    private Gender gender ;
     private MultipartFile img;
 
     public AccountRegistrationRequest() {
     }
 
-    public AccountRegistrationRequest(String name, String lastName, String email, String password, String dob, MultipartFile img) {
+    public AccountRegistrationRequest(String name, String lastName, String email, String password, String dob,Gender gender, MultipartFile img) {
         this.name = name;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.dob = LocalDate.parse(dob);
+        this.gender = gender;
         this.img = img;
+
     }
 
     public String getName() {
@@ -29,7 +33,7 @@ public class AccountRegistrationRequest {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name.toLowerCase().trim();
     }
 
     public String getLastName() {
@@ -37,7 +41,7 @@ public class AccountRegistrationRequest {
     }
 
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+        this.lastName = lastName.toLowerCase().trim();
     }
 
     public String getEmail() {
@@ -45,7 +49,7 @@ public class AccountRegistrationRequest {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = email.toLowerCase().trim();
     }
 
     public String getPassword() {
@@ -62,6 +66,14 @@ public class AccountRegistrationRequest {
 
     public void setDob(String dob) {
         this.dob = LocalDate.parse(dob);
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 
     public MultipartFile getImg() {
