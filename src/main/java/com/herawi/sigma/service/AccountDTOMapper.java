@@ -11,7 +11,8 @@ public class AccountDTOMapper {
                 account.getLastName(),
                 profileImage,
                 account.getEmail(),
-                account.getConnections().size()
+                account.getConnections().size(),
+                account.getGender()
         );
     }
 }
