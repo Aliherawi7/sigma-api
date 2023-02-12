@@ -182,14 +182,10 @@ public class AccountService implements UserDetailsService {
                 account.getGender()
         );
     }
-    public Account getAccountWithPassword(String email, String password){
+    public Account getAccountWithDetails(String email){
         if (email != null){
             email = email.toLowerCase().trim();
-            Account account = accountRepository.findByEmail(email);
-            boolean isOk = bCryptPasswordEncoder.matches(password, account.getPassword());
-            if(isOk){
-                return account;
-            }
+            return accountRepository.findByEmail(email);
         }
         return null;
     }
