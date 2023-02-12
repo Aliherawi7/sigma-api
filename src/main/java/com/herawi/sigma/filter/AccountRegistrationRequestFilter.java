@@ -1,37 +1,48 @@
 package com.herawi.sigma.filter;
 
 import com.herawi.sigma.dto.AccountRegistrationRequest;
-import org.springframework.core.type.filter.RegexPatternTypeFilter;
-
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
+
 public class AccountRegistrationRequestFilter {
-    public static boolean filter(AccountRegistrationRequest accountRegistrationRequest) {
+
+    public static FilterResponse filter(AccountRegistrationRequest accountRegistrationRequest) {
+        ArrayList<String> failedFields = new ArrayList<>();
         if (accountRegistrationRequest.getName() == null ||
                 accountRegistrationRequest.getLastName() == null ||
                 accountRegistrationRequest.getDob() == null ||
                 accountRegistrationRequest.getEmail() == null ||
                 accountRegistrationRequest.getPassword() == null) {
-            return false;
+            failedFields.add("the fields should not be empty");
+            return new FilterResponse(failedFields, false);
         }
-        boolean isNameAndLastNameAreValid = filterNameOrLastName(accountRegistrationRequest.getName())
-                && filterNameOrLastName(accountRegistrationRequest.getLastName());
+//        boolean isNameAndLastNameAreValid = filterNameOrLastName(accountRegistrationRequest.getName())
+//                && filterNameOrLastName(accountRegistrationRequest.getLastName());
+        if(!filterNameOrLastName(accountRegistrationRequest.getName())){
+            failedFields.add("Invalid name");
+        }
+        if(!filterNameOrLastName(accountRegistrationRequest.getLastName())){
+            failedFields.add("Invalid lastName");
+        }
 
-
-        boolean isEmailValid = filterEmail(accountRegistrationRequest.getEmail());
-
-        boolean isDOBValid = filterDOB(accountRegistrationRequest.getDob());
-        boolean isPasswordValid = filterPassword(accountRegistrationRequest.getPassword());
-
-        System.out.println("name lastname"+isNameAndLastNameAreValid);
-        System.out.println("dob"+isDOBValid);
-        System.out.println("password"+ isPasswordValid);
-        System.out.println("email"+isEmailValid);
-
-        return isNameAndLastNameAreValid && isDOBValid && isEmailValid && isPasswordValid;
+        if(!filterEmail(accountRegistrationRequest.getEmail())){
+            failedFields.add("Invalid email");
+        }
+        if(!filterDOB(accountRegistrationRequest.getDob())){
+            failedFields.add("age should be 18 or higher");
+        }
+        if(!filterPassword(accountRegistrationRequest.getPassword())){
+            failedFields.add("invalid password. password should contain numbers," +
+                    " letters, and character. and has at least 8 characters");
+        }
+        if(failedFields.size()>0){
+            return new FilterResponse(failedFields, false);
+        }
+        return new FilterResponse(null, true);
     }
     public static boolean filterPassword(String password){
 //        String regex = "^(?=.*[0-9])"
@@ -56,3 +67,4 @@ public class AccountRegistrationRequestFilter {
         return matcher.matches();
     }
 }
+
