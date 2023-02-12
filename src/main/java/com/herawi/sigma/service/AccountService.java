@@ -1,24 +1,27 @@
 package com.herawi.sigma.service;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.herawi.sigma.dto.AccountDTO;
 import com.herawi.sigma.dto.AccountRegistrationRequest;
+import com.herawi.sigma.dto.RegistrationResponse;
 import com.herawi.sigma.filter.AccountRegistrationRequestFilter;
+import com.herawi.sigma.filter.FilterResponse;
 import com.herawi.sigma.model.Account;
-import com.herawi.sigma.model.ProfileImage;
+import com.herawi.sigma.model.Role;
 import com.herawi.sigma.repository.AccountRepository;
 import com.herawi.sigma.repository.ProfileImageRepository;
 import com.herawi.sigma.tools.JWTTools;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -45,19 +48,27 @@ public class AccountService implements UserDetailsService {
         return null;
     }
 
-    public boolean addAccount(AccountRegistrationRequest accountRegistrationRequest) throws Exception {
+    public ResponseEntity<?> addAccount(AccountRegistrationRequest accountRegistrationRequest) throws Exception {
         if (accountRegistrationRequest != null) {
-            if (!AccountRegistrationRequestFilter.filter(accountRegistrationRequest)) {
-                return false;
+            FilterResponse filterResponse = AccountRegistrationRequestFilter.filter(accountRegistrationRequest);
+            if (!filterResponse.isOk()) {
+                return new ResponseEntity<>(filterResponse, HttpStatus.BAD_REQUEST);
             }
-            if (accountRepository.existsByEmail(accountRegistrationRequest.getEmail())) {
-                throw new Exception("Email already has taken");
+            if (accountRepository.existsAccountByEmail(accountRegistrationRequest.getEmail())) {
+                System.out.println("account already exist");
+                Map<String, String> response = new HashMap<>();
+                response.put("error_message", "This email already has taken");
+                response.put("status", HttpStatus.BAD_REQUEST.name());
+                response.put("status_code", HttpStatus.BAD_REQUEST.value()+"");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
+            System.out.println("account is not duplicate");
             Account account = new Account();
             account.setName(accountRegistrationRequest.getName());
             account.setLastName(accountRegistrationRequest.getLastName());
             account.setDob(accountRegistrationRequest.getDob());
             account.setEmail(accountRegistrationRequest.getEmail());
+            account.setGender(accountRegistrationRequest.getGender());
 
             // encode password before saving in database
             account.setPassword(bCryptPasswordEncoder.encode(accountRegistrationRequest.getPassword()));
@@ -65,15 +76,25 @@ public class AccountService implements UserDetailsService {
             if (!accountRegistrationRequest.getImg().isEmpty()) {
                 fileStorageService.storeFile(accountRegistrationRequest.getImg(),account.getId()+"");
             }
-            return true;
+            Algorithm algorithm = Algorithm.HMAC256("Bearer".getBytes());
+            String accessToken = JWT.create()
+                    .withSubject(account.getEmail())
+                    .withExpiresAt(new Date(System.currentTimeMillis() + (1000*60*60*24*10)))
+                    .withClaim("roles", account.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
+                    .sign(algorithm);
+            RegistrationResponse registrationResponse =  new RegistrationResponse(
+                    accessToken,
+                    AccountDTOMapper.apply(account, accountRegistrationRequest.getImg().getBytes())
+            );
+            return new ResponseEntity<>(registrationResponse, HttpStatus.OK);
         }
-        return false;
+        return ResponseEntity.badRequest().build();
     }
 
     public boolean updateAccount(HttpServletRequest request, AccountRegistrationRequest accountRegistrationRequest) throws Exception {
         String accountEmail = JWTTools.getUserEmailByJWT(request);
         if (accountRegistrationRequest != null) {
-            if (!accountRepository.existsByEmail(accountEmail)) {
+            if (!accountRepository.existsAccountByEmail(accountEmail)) {
                 throw new Exception("This user is not found in database");
             }
             Account account = accountRepository.findByEmail(accountRegistrationRequest.getEmail());
@@ -84,7 +105,7 @@ public class AccountService implements UserDetailsService {
             }
             if (accountRegistrationRequest.getEmail() != null) {
                 if (AccountRegistrationRequestFilter.filterEmail(accountRegistrationRequest.getEmail())
-                        && !accountRepository.existsByEmail(accountRegistrationRequest.getEmail())) {
+                        && !accountRepository.existsAccountByEmail(accountRegistrationRequest.getEmail())) {
                     account.setEmail(accountRegistrationRequest.getEmail());
                 }
             }
@@ -111,7 +132,7 @@ public class AccountService implements UserDetailsService {
     }
 
     public boolean deleteAccount(String userName, String email, String password) throws Exception {
-        if (accountRepository.existsByEmail(email)) {
+        if (accountRepository.existsAccountByEmail(email)) {
             Account p = accountRepository.findByEmail(email);
             boolean arePasswordsMatched = bCryptPasswordEncoder.matches(password, p.getPassword());
             if (arePasswordsMatched) {
@@ -152,7 +173,8 @@ public class AccountService implements UserDetailsService {
                 account.getLastName(),
                 profileImage,
                 account.getEmail(),
-                account.getConnections().size()
+                account.getConnections().size(),
+                account.getGender()
         );
     }
 
