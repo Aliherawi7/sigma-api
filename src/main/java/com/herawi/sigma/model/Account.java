@@ -1,9 +1,13 @@
 package com.herawi.sigma.model;
 
 
+import com.herawi.sigma.constants.Gender;
+import org.springframework.data.repository.cdi.Eager;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -17,6 +21,8 @@ import java.util.HashSet;
 )
 public class Account {
     @Id
+    @SequenceGenerator(sequenceName = "account_sequence", name = "account_sequence", initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_sequence")
     private long id;
     private String name;
     private String lastName;
@@ -35,9 +41,11 @@ public class Account {
     private String location;
     @ManyToMany(fetch =FetchType.EAGER)
     private Collection<Account> connections = new HashSet<>();
-    private char gender;
 
-
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+    @ManyToMany(fetch = FetchType.LAZY)
+    private Collection<Role> roles = new ArrayList<>();
 
 
     public Account() {
@@ -48,7 +56,7 @@ public class Account {
                    LocalDate dob, boolean isActive, String email,
                    String password, String phoneNumber, String userName,
                    boolean accountLocked, int failedAttempt, Date lockTime,
-                   String location, char gender) {
+                   String location, Gender gender) {
         this.id = id;
         this.name = name;
         this.lastName = lastName;
@@ -198,11 +206,19 @@ public class Account {
         return connections.remove(p);
     }
 
-    public char getGender() {
+    public Gender getGender() {
         return gender;
     }
 
-    public void setGender(char gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
+    }
+
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
     }
 }
