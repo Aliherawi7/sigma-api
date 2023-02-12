@@ -15,6 +15,7 @@ import com.herawi.sigma.tools.JWTTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,23 +30,27 @@ import java.util.stream.Collectors;
 public class AccountService implements UserDetailsService {
     private final AccountRepository accountRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final ProfileImageRepository profileImageRepository;
     private final FileStorageService fileStorageService;
 
     @Autowired
     public AccountService(AccountRepository accountRepository,
                           BCryptPasswordEncoder bCryptPasswordEncoder,
-                          ProfileImageRepository profileImageRepository,
                           FileStorageService fileStorageService) {
         this.accountRepository = accountRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.profileImageRepository = profileImageRepository;
         this.fileStorageService = fileStorageService;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Account account = accountRepository.findByEmail(email);
+        if(account == null){
+            throw new UsernameNotFoundException("account not found");
+        }
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        account.getRoles()
+                .forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
+        return new org.springframework.security.core.userdetails.User(account.getEmail(), account.getPassword(), authorities);
     }
 
     public ResponseEntity<?> addAccount(AccountRegistrationRequest accountRegistrationRequest) throws Exception {
@@ -176,6 +181,17 @@ public class AccountService implements UserDetailsService {
                 account.getConnections().size(),
                 account.getGender()
         );
+    }
+    public Account getAccountWithPassword(String email, String password){
+        if (email != null){
+            email = email.toLowerCase().trim();
+            Account account = accountRepository.findByEmail(email);
+            boolean isOk = bCryptPasswordEncoder.matches(password, account.getPassword());
+            if(isOk){
+                return account;
+            }
+        }
+        return null;
     }
 
     /*
