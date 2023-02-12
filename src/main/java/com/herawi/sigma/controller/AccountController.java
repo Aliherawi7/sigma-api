@@ -1,17 +1,17 @@
 package com.herawi.sigma.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.herawi.sigma.dto.AccountDTO;
 import com.herawi.sigma.dto.AccountRegistrationRequest;
 import com.herawi.sigma.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping("api/accounts")
+@RequestMapping( value = "api/accounts", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class AccountController {
 
     private final AccountService accountService;
@@ -22,12 +22,7 @@ public class AccountController {
 
     @PostMapping()
     public ResponseEntity<?> addAccount(@ModelAttribute AccountRegistrationRequest accountRegistrationRequest) throws Exception {
-        if(accountService.addAccount(accountRegistrationRequest)){
-            return new ResponseEntity<>("successfully saved", HttpStatus.CREATED);
-        }else {
-            return new ResponseEntity<>("invalid parameter", HttpStatus.BAD_REQUEST);
-        }
-
+        return accountService.addAccount(accountRegistrationRequest);
     }
 
     @GetMapping
