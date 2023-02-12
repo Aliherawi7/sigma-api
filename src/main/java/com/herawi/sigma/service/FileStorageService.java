@@ -73,7 +73,6 @@ public class FileStorageService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return imageBytes;
     }
 }
