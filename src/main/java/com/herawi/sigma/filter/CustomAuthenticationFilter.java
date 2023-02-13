@@ -9,6 +9,7 @@ import com.herawi.sigma.model.Role;
 import com.herawi.sigma.service.AccountDTOMapper;
 import com.herawi.sigma.service.AccountService;
 import com.herawi.sigma.service.FileStorageService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -59,12 +62,29 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setHeader("accessToken", accessToken);
         response.setHeader("refreshToken", accessToken);
+        response.setStatus(HttpStatus.CREATED.value());
         new ObjectMapper().writeValue(response.getOutputStream(), loginInformationDTO);
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        System.out.println("unsuccessful attempt");
-
+        Map<String, String> failedFields = new HashMap<>();
+        String email = request.getParameter("email");
+        if(email == null){
+            failedFields.put("email", "email should not empty!!!");
+        }
+        if(email != null){
+            email = email.toLowerCase().trim();
+            boolean isValidEmail = AccountRegistrationRequestFilter.filterEmail(email);
+            if(!isValidEmail){
+                failedFields.put("email", "email is not valid");
+            }else if(!accountService.isAccountExistByEmail(email)) {
+                failedFields.put("error_message", "Account not found with this email");
+            }else{
+                failedFields.put("error_message", "wrong password");
+            }
+        }
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        new ObjectMapper().writeValue(response.getOutputStream(), failedFields);
     }
 }
