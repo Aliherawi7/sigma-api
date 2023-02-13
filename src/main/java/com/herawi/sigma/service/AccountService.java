@@ -190,6 +190,10 @@ public class AccountService implements UserDetailsService {
         return null;
     }
 
+    public boolean isAccountExistByEmail(String email){
+        return accountRepository.existsAccountByEmail(email);
+    }
+
     /*
      * find all connections of this account
      * */
