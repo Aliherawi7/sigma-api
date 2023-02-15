@@ -91,7 +91,7 @@ public class AccountService implements UserDetailsService {
                     accessToken,
                     AccountDTOMapper.apply(account, accountRegistrationRequest.getImg().getBytes())
             );
-            return new ResponseEntity<>(registrationResponse, HttpStatus.OK);
+            return new ResponseEntity<>(registrationResponse, HttpStatus.CREATED);
         }
         return ResponseEntity.badRequest().build();
     }
