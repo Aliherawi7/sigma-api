@@ -69,12 +69,11 @@ public class AccountService implements UserDetailsService {
             if (accountRepository.existsAccountByEmail(accountRegistrationRequest.getEmail())) {
                 System.out.println("account already exist");
                 Map<String, String> response = new HashMap<>();
-                response.put("error_message", "This email already has taken");
+                response.put("errorMessage", "This email already has taken");
                 response.put("status", HttpStatus.BAD_REQUEST.name());
-                response.put("status_code", HttpStatus.BAD_REQUEST.value()+"");
+                response.put("statusCode", HttpStatus.BAD_REQUEST.value()+"");
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
-            System.out.println("account is not duplicate");
             Account account = new Account();
             account.setName(accountRegistrationRequest.getName());
             account.setLastName(accountRegistrationRequest.getLastName());
