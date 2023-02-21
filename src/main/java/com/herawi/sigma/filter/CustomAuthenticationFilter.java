@@ -69,6 +69,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         Map<String, String> failedFields = new HashMap<>();
+        failedFields.put("statusCode", HttpStatus.BAD_REQUEST.value()+"");
+        failedFields.put("statusText", HttpStatus.BAD_REQUEST.name());
         String email = request.getParameter("email");
         if(email == null){
             failedFields.put("email", "email should not empty!!!");
@@ -79,9 +81,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             if(!isValidEmail){
                 failedFields.put("email", "email is not valid");
             }else if(!accountService.isAccountExistByEmail(email)) {
-                failedFields.put("error_message", "Account not found with this email");
+                failedFields.put("errorMessage", "Account not found with this email");
             }else{
-                failedFields.put("error_message", "wrong password");
+                failedFields.put("errorMessage", "wrong password");
             }
         }
         response.setStatus(HttpStatus.BAD_REQUEST.value());
