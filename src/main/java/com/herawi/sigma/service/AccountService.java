@@ -10,7 +10,6 @@ import com.herawi.sigma.filter.FilterResponse;
 import com.herawi.sigma.model.Account;
 import com.herawi.sigma.model.Role;
 import com.herawi.sigma.repository.AccountRepository;
-import com.herawi.sigma.repository.ProfileImageRepository;
 import com.herawi.sigma.tools.JWTTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,6 +40,10 @@ public class AccountService implements UserDetailsService {
         this.fileStorageService = fileStorageService;
     }
 
+    /*
+    * this method implemented for for UserDetailsService for authentication process
+    * in Spring security
+    * */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Account account = accountRepository.findByEmail(email);
@@ -52,7 +55,11 @@ public class AccountService implements UserDetailsService {
                 .forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
         return new org.springframework.security.core.userdetails.User(account.getEmail(), account.getPassword(), authorities);
     }
-
+    /*
+    * this method add the new account in the database with provided information
+    * and then after saving successfully in the database it returns the account information
+    * with JWT token for authorization the account in the subsequence requests
+    * */
     public ResponseEntity<?> addAccount(AccountRegistrationRequest accountRegistrationRequest) throws Exception {
         if (accountRegistrationRequest != null) {
             FilterResponse filterResponse = AccountRegistrationRequestFilter.filter(accountRegistrationRequest);
@@ -96,6 +103,10 @@ public class AccountService implements UserDetailsService {
         return ResponseEntity.badRequest().build();
     }
 
+    /*
+     * update the current logged in account with the provided information
+     * this method should return the account information with the updated information
+     */
     public boolean updateAccount(HttpServletRequest request, AccountRegistrationRequest accountRegistrationRequest) throws Exception {
         String accountEmail = JWTTools.getUserEmailByJWT(request);
         if (accountRegistrationRequest != null) {
@@ -144,17 +155,19 @@ public class AccountService implements UserDetailsService {
                 accountRepository.delete(p);
                 return true;
             } else {
-                throw new Exception("Wrong password! user not removed");
+                throw new Exception("Wrong password! account did not remove");
             }
         }
         return false;
     }
 
+    /* gives the specific account detail with request header authorization */
     public AccountDTO getAccount(HttpServletRequest request) {
         String email = JWTTools.getUserEmailByJWT(request);
         return getAccount(email);
     }
 
+    /* give all the accounts which are saved in the database*/
     public Collection<AccountDTO> getAllAccount(){
         return accountRepository
                 .findAll()
@@ -182,6 +195,8 @@ public class AccountService implements UserDetailsService {
                 account.getGender()
         );
     }
+
+    /* return all account information by email of the account*/
     public Account getAccountWithDetails(String email){
         if (email != null){
             email = email.toLowerCase().trim();
@@ -189,7 +204,7 @@ public class AccountService implements UserDetailsService {
         }
         return null;
     }
-
+    /* check whether there is account with the provided email address*/
     public boolean isAccountExistByEmail(String email){
         return accountRepository.existsAccountByEmail(email);
     }
@@ -209,9 +224,8 @@ public class AccountService implements UserDetailsService {
     }
 
     /*
-     * add someone as connection
+     * add someone as connection to current logged in account
      * */
-
     public boolean addAsConnection(HttpServletRequest request, String targetEmail) {
         String email = JWTTools.getUserEmailByJWT(request);
         Account account = accountRepository.findByEmail(email);
