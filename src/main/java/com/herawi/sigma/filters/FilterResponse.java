@@ -1,4 +1,4 @@
-package com.herawi.sigma.filter;
+package com.herawi.sigma.filters;
 
 import java.util.Map;
 

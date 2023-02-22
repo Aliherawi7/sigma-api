@@ -1,16 +1,17 @@
 package com.herawi.sigma;
 
-import com.herawi.sigma.model.Account;
-import com.herawi.sigma.service.AccountService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.herawi.sigma.dto.AccountRegistrationRequest;
+import com.herawi.sigma.services.AccountService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.time.LocalDate;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 @SpringBootApplication
 
@@ -26,22 +27,29 @@ public class SigmaApplication {
 		SpringApplication.run(SigmaApplication.class, args);
 	}
 
-//	@Bean
-//	CommandLineRunner run(AccountService accountService){
-//
-//		return args -> {
-//			Account account = new Account(
-//					1L, "Ali", "Herawi", LocalDate.of(2000,3,12),
-//					true, "aliherawi7@gmail.com","12345","0797608705",
-//					"aliherawi7",false, 0, null, "Afg",
-//					'M'
-//			);
-//			File file1 = new File("src/main/resources/templates/images/ProfileImages/user1.jpg");
-//			FileInputStream fis = new FileInputStream(file1);
-//			byte[] file1Bytes = new byte[(int) file1.length()];
-//			accountService.addAccount(account, file1Bytes);
-//		};
-//	}
+	@Bean
+	CommandLineRunner run(AccountService accountService){
+
+		return args -> {
+			ObjectMapper objectMapper = new ObjectMapper();
+			ArrayList<AccountRegistrationRequest> accounts = new ArrayList<>();
+			try {
+				URL jsonUrl = Thread.currentThread().getContextClassLoader().getResource("static\\accounts.json");
+				System.out.println(jsonUrl);
+				AccountRegistrationRequest[] array = objectMapper.readValue(jsonUrl, AccountRegistrationRequest[].class);
+				accounts.addAll(Arrays.asList(array));
+				accounts.forEach(item -> {
+					try {
+						accountService.addAccount(item);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				});
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		};
+	}
 
 
 

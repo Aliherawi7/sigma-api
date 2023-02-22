@@ -1,10 +1,9 @@
-package com.herawi.sigma.controller;
+package com.herawi.sigma.controllers;
 
 import com.herawi.sigma.dto.AccountDTO;
 import com.herawi.sigma.dto.AccountRegistrationRequest;
-import com.herawi.sigma.service.AccountService;
+import com.herawi.sigma.services.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +40,7 @@ public class AccountController {
         }
         return ResponseEntity.noContent().build();
     }
-    @GetMapping("all")
+    @GetMapping("/all")
     public ResponseEntity<?> getAll(){
         return ResponseEntity.ok().body(accountService.getAllAccount());
     }

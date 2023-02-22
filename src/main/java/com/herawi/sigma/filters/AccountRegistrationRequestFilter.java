@@ -1,4 +1,4 @@
-package com.herawi.sigma.filter;
+package com.herawi.sigma.filters;
 
 import com.herawi.sigma.constants.Gender;
 import com.herawi.sigma.dto.AccountRegistrationRequest;

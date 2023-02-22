@@ -1,8 +1,7 @@
-package com.herawi.sigma.model;
+package com.herawi.sigma.models;
 
 
 import com.herawi.sigma.constants.Gender;
-import org.springframework.data.repository.cdi.Eager;
 
 import javax.persistence.*;
 import java.time.LocalDate;

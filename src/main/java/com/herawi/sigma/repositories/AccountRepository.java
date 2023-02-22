@@ -1,6 +1,6 @@
-package com.herawi.sigma.repository;
+package com.herawi.sigma.repositories;
 
-import com.herawi.sigma.model.Account;
+import com.herawi.sigma.models.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Collection;
 

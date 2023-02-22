@@ -1,15 +1,15 @@
-package com.herawi.sigma.service;
+package com.herawi.sigma.services;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.herawi.sigma.dto.AccountDTO;
 import com.herawi.sigma.dto.AccountRegistrationRequest;
 import com.herawi.sigma.dto.RegistrationResponse;
-import com.herawi.sigma.filter.AccountRegistrationRequestFilter;
-import com.herawi.sigma.filter.FilterResponse;
-import com.herawi.sigma.model.Account;
-import com.herawi.sigma.model.Role;
-import com.herawi.sigma.repository.AccountRepository;
+import com.herawi.sigma.filters.AccountRegistrationRequestFilter;
+import com.herawi.sigma.filters.FilterResponse;
+import com.herawi.sigma.models.Account;
+import com.herawi.sigma.models.Role;
+import com.herawi.sigma.repositories.AccountRepository;
 import com.herawi.sigma.tools.JWTTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

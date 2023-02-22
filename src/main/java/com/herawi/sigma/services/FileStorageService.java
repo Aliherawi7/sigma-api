@@ -1,4 +1,4 @@
-package com.herawi.sigma.service;
+package com.herawi.sigma.services;
 
 import com.herawi.sigma.properties.FileStorageProperties;
 import org.springframework.beans.factory.annotation.Autowired;

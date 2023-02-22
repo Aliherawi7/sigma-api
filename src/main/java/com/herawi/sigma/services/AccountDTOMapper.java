@@ -1,7 +1,7 @@
-package com.herawi.sigma.service;
+package com.herawi.sigma.services;
 
 import com.herawi.sigma.dto.AccountDTO;
-import com.herawi.sigma.model.Account;
+import com.herawi.sigma.models.Account;
 
 
 public class AccountDTOMapper {

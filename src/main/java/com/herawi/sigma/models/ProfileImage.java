@@ -1,9 +1,4 @@
-package com.herawi.sigma.model;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+package com.herawi.sigma.models;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

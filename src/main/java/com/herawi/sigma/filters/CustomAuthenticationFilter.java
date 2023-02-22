@@ -1,12 +1,12 @@
-package com.herawi.sigma.filter;
+package com.herawi.sigma.filters;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.herawi.sigma.dto.LoginInformationDTO;
-import com.herawi.sigma.model.Account;
-import com.herawi.sigma.model.Role;
-import com.herawi.sigma.service.AccountService;
+import com.herawi.sigma.models.Account;
+import com.herawi.sigma.models.Role;
+import com.herawi.sigma.services.AccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;

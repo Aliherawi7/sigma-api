@@ -1,4 +1,4 @@
-package com.herawi.sigma.model;
+package com.herawi.sigma.models;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
