@@ -31,8 +31,8 @@ public class FileStorageService {
         }
     }
 
-    public String storeFile(MultipartFile multipartFile, String userId) throws IOException {
-
+    public void storeFile(MultipartFile multipartFile, String userId) throws IOException {
+        if(multipartFile == null || userId == null) return;
         // Normalize file name
         String fileName = StringUtils.getFilename(multipartFile.getOriginalFilename());
 
@@ -44,11 +44,10 @@ public class FileStorageService {
         String extension = multipartFile.getOriginalFilename().split("\\.")[1];
         Path targetLocation = this.fileStorageLocation.resolve(userId+"."+extension);
         Files.copy(multipartFile.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-        return userId;
     }
     public byte[] getProfileImage(String userId) {
-
         File[] file = new File(fileStorageLocation.toUri()).listFiles();
+        System.out.println(fileStorageLocation.toUri());
         assert file != null;
         File image = Stream.of(file)
                 .filter(item -> item.getName().split("\\.")[0].equalsIgnoreCase(userId))
@@ -66,4 +65,20 @@ public class FileStorageService {
         }
         return imageBytes;
     }
+    public String storeFile(File file , String userId) throws IOException {
+        assert file != null;
+        String fileName = StringUtils.getFilename(file.getName());
+        FileInputStream fis = new FileInputStream(file);
+
+        // Check if the file's name contains valid  characters or not
+        if (fileName.contains("..")) {
+            throw new RuntimeException("Sorry! File name which contains invalid path sequence " + fileName);
+        }
+        String extension = fileName.split("\\.")[1];
+        Path targetLocation = this.fileStorageLocation.resolve(userId+"."+extension);
+        Files.copy(fis, targetLocation, StandardCopyOption.REPLACE_EXISTING);
+        return userId;
+    }
+
+
 }

@@ -84,7 +84,7 @@ public class AccountService implements UserDetailsService {
             // encode password before saving in database
             account.setPassword(bCryptPasswordEncoder.encode(accountRegistrationRequest.getPassword()));
             account = accountRepository.save(account);
-            if (!accountRegistrationRequest.getImg().isEmpty()) {
+            if (accountRegistrationRequest.getImg() != null && !accountRegistrationRequest.getImg().isEmpty()) {
                 fileStorageService.storeFile(accountRegistrationRequest.getImg(),account.getId()+"");
             }
             Algorithm algorithm = Algorithm.HMAC256("Bearer".getBytes());
@@ -95,7 +95,7 @@ public class AccountService implements UserDetailsService {
                     .sign(algorithm);
             RegistrationResponse registrationResponse =  new RegistrationResponse(
                     accessToken,
-                    AccountDTOMapper.apply(account, accountRegistrationRequest.getImg().getBytes())
+                    AccountDTOMapper.apply(account, accountRegistrationRequest.getImg() != null ? accountRegistrationRequest.getImg().getBytes() : null)
             );
             return new ResponseEntity<>(registrationResponse, HttpStatus.CREATED);
         }
