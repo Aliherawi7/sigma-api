@@ -6,8 +6,6 @@ import java.util.Collection;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     Collection<Notification> findAllByUserId(long userId);
-//    Collection<Notification> findAllByUserIdAndSeen(long userId, boolean isSeen);
-//    Collection<Notification> findAllByUserIdAndSeenIsFalse(long userId);
     Collection<Notification> findAllBySeenFalseAndUserId(long userId);
 
 
