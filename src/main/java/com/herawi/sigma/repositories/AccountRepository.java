@@ -6,6 +6,7 @@ import java.util.Collection;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
     Account findByEmail(String email);
+    Account findAccountByUserName(String userName);
     Account findByUserName(String userName);
     Collection<Account> findAllByNameOrLastName(String name, String lastName);
     boolean existsAccountByEmail(String email);
