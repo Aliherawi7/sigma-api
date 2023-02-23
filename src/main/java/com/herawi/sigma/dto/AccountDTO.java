@@ -7,6 +7,7 @@ public class AccountDTO {
 
     private String name;
     private String lastName;
+    private String userName;
     private String email;
     private long connections;
     private Gender gender;
@@ -15,9 +16,10 @@ public class AccountDTO {
     public AccountDTO() {
     }
 
-    public AccountDTO(String name, String lastName, byte[] profileImage, String email, long connections, Gender gender) {
+    public AccountDTO(String name, String lastName,String userName, byte[] profileImage, String email, long connections, Gender gender) {
         this.name = name;
         this.lastName = lastName;
+        this.userName = userName;
         this.profileImage = profileImage;
         this.email = email;
         this.connections = connections;
@@ -38,6 +40,14 @@ public class AccountDTO {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public byte[] getProfileImage() {
