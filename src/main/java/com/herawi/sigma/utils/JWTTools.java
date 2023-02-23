@@ -1,4 +1,4 @@
-package com.herawi.sigma.tools;
+package com.herawi.sigma.utils;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
