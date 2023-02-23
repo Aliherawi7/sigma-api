@@ -10,7 +10,7 @@ import com.herawi.sigma.filters.FilterResponse;
 import com.herawi.sigma.models.Account;
 import com.herawi.sigma.models.Role;
 import com.herawi.sigma.repositories.AccountRepository;
-import com.herawi.sigma.tools.JWTTools;
+import com.herawi.sigma.utils.JWTTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,6 +75,7 @@ public class AccountService implements UserDetailsService {
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
             Account account = new Account();
+            account.setUserName(accountRegistrationRequest.getEmail().substring(0, accountRegistrationRequest.getEmail().indexOf("@")));
             account.setName(accountRegistrationRequest.getName());
             account.setLastName(accountRegistrationRequest.getLastName());
             account.setDob(accountRegistrationRequest.getDob());
@@ -188,11 +189,22 @@ public class AccountService implements UserDetailsService {
         return new AccountDTO(
                 account.getName(),
                 account.getLastName(),
+                account.getUserName(),
                 profileImage,
                 account.getEmail(),
                 account.getConnections().size(),
                 account.getGender()
         );
+    }
+
+    /* return account by userName */
+    public AccountDTO getAccountByUserName(String userName){
+        if(userName == null || userName.isEmpty()) return null;
+        Account account = accountRepository.findByUserName(userName);
+        if(account != null){
+            return AccountDTOMapper.apply(account, fileStorageService.getProfileImage(account.getId()+""));
+        }
+        return null;
     }
 
     /* return all account information by email of the account*/
@@ -203,6 +215,8 @@ public class AccountService implements UserDetailsService {
         }
         return null;
     }
+
+
     /* check whether there is account with the provided email address*/
     public boolean isAccountExistByEmail(String email){
         return accountRepository.existsAccountByEmail(email);
