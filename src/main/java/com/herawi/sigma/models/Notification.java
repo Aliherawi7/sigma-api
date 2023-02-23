@@ -1,5 +1,6 @@
 package com.herawi.sigma.models;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
@@ -12,7 +13,7 @@ public class Notification {
     private String message;
     private long userId;
     private LocalDateTime localDateTime;
-    private boolean isSeen;
+    private boolean seen;
 
     public Notification() {
         this.localDateTime = LocalDateTime.now();
@@ -24,7 +25,7 @@ public class Notification {
         this.message = message;
         this.userId = userId;
         this.localDateTime = localDateTime;
-        this.isSeen = isSeen;
+        this.seen = isSeen;
     }
 
     public long getId() {
@@ -68,10 +69,10 @@ public class Notification {
     }
 
     public boolean isSeen() {
-        return isSeen;
+        return seen;
     }
 
     public void setSeen(boolean seen) {
-        isSeen = seen;
+        seen = seen;
     }
 }
