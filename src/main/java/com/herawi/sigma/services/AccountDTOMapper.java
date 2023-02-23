@@ -9,6 +9,7 @@ public class AccountDTOMapper {
         return  new AccountDTO(
                 account.getName(),
                 account.getLastName(),
+                account.getUserName(),
                 profileImage,
                 account.getEmail(),
                 account.getConnections().size(),
