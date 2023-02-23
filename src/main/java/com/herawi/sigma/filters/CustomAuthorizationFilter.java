@@ -31,6 +31,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         if (request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/accounts")) {
+            System.out.println("skip the filtering");
             filterChain.doFilter(request, response);
         }else {
             String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -47,6 +48,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                             new UsernamePasswordAuthenticationToken(email, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    System.out.println("after filtering successfully");
                     filterChain.doFilter(request, response);
                 }catch (Exception e){
                     Map<String, String> error = new HashMap<>();
@@ -56,6 +58,15 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                     new ObjectMapper().writeValue(response.getOutputStream(), error);
                 }
+            } else {
+                response.setHeader("error", "UnAuthorized request");
+                response.setStatus(HttpStatus.FORBIDDEN.value());
+                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                Map<String, String> map = new HashMap<>();
+                map.put("errorMessage", "UnAuthorized request");
+                map.put("statusCode", HttpStatus.FORBIDDEN.value()+"");
+                map.put("status", HttpStatus.FORBIDDEN.name());
+                new ObjectMapper().writeValue(response.getOutputStream(), map);
             }
         }
 
