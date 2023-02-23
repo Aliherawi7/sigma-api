@@ -81,12 +81,12 @@
     "img": null
   },
   {
-    "name": "Sonny",
-    "lastName": "micheal",
+    "name": "Marry",
+    "lastName": "Watson",
     "password":"123456",
     "dob": "2000-02-03",
-    "email": "Sonnymicheal@gmail.com",
-    "gender": "Male",
+    "email": "MarryWatson@gmail.com",
+    "gender": "female",
     "img": null
   },
   {
@@ -99,12 +99,12 @@
     "img": null
   },
   {
-    "name": "Marry",
-    "lastName": "Watson",
+    "name": "Sonny",
+    "lastName": "micheal",
     "password":"123456",
     "dob": "2000-02-03",
-    "email": "MarryWatson@gmail.com",
-    "gender": "female",
+    "email": "Sonnymicheal@gmail.com",
+    "gender": "Male",
     "img": null
   },
   {
