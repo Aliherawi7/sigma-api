@@ -44,8 +44,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors();
         http.authorizeHttpRequests().antMatchers("api/*","**").permitAll();
         http.authorizeHttpRequests().antMatchers("/api/login","/api/register").permitAll();
-        http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilter(customAuthenticationFilter);
     }
 
     @Override
