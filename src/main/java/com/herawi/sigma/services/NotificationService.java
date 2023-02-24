@@ -48,4 +48,10 @@ public class NotificationService {
         }
         return notifications;
     }
+    /*
+    * add new notification in the database
+    * */
+    public Notification addNotification(Notification notification){
+        return notificationRepository.save(notification);
+    }
 }
