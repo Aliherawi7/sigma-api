@@ -1,23 +1,25 @@
 package com.herawi.sigma.services;
 
-import com.herawi.sigma.dto.ConnectionRequest;
-import com.herawi.sigma.repositories.ConnectionRequestRepository;
+import com.herawi.sigma.models.FriendRequest;
+import com.herawi.sigma.repositories.FriendRequestRepository;
 import org.springframework.stereotype.Service;
 
+import java.security.InvalidParameterException;
+
 @Service
-public class ConnectionRequestService {
+public class FriendRequestService {
 
-    private final ConnectionRequestRepository connectionRequestRepository;
+    private final FriendRequestRepository connectionRequestRepository;
 
-    public ConnectionRequestService(ConnectionRequestRepository connectionRequestRepository) {
+    public FriendRequestService(FriendRequestRepository connectionRequestRepository) {
         this.connectionRequestRepository = connectionRequestRepository;
     }
 
-    public ConnectionRequest addConnectionRequest(ConnectionRequest connectionRequest){
-        if(connectionRequest.getRequestReceiverId() == connectionRequest.getRequestSenderId())
-            return null;
+    public FriendRequest addFriendRequest(FriendRequest friendRequest){
+        if(friendRequest.getRequestReceiverId() == friendRequest.getRequestSenderId())
+            throw new InvalidParameterException("Invalid receiverId");
 
-        return connectionRequestRepository.save(connectionRequest);
+        return connectionRequestRepository.save(friendRequest);
     }
 
 }

@@ -58,7 +58,7 @@ public class AccountService implements UserDetailsService {
     /*
     * this method add the new account in the database with provided information
     * and then after saving successfully in the database it returns the account information
-    * with JWT token for authorization the account in the subsequence requests
+    * with JWT token for authorizing the account in the subsequence requests
     * */
     public ResponseEntity<?> addAccount(AccountRegistrationRequest accountRegistrationRequest) throws Exception {
         if (accountRegistrationRequest != null) {

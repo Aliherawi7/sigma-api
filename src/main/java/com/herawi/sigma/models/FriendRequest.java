@@ -1,11 +1,11 @@
-package com.herawi.sigma.dto;
+package com.herawi.sigma.models;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 @Entity
-public class ConnectionRequest {
+public class FriendRequest {
 
     @Id
     private long id;
@@ -15,13 +15,13 @@ public class ConnectionRequest {
     private boolean seen;
     private boolean isAccepted;
 
-    public ConnectionRequest() {
+    public FriendRequest() {
         this.requestDate = LocalDateTime.now();
         this.seen = false;
         isAccepted = false;
     }
 
-    public ConnectionRequest(long id, long requestSenderId, long requestReceiverId, LocalDateTime requestDate, boolean seen, boolean isAccepted) {
+    public FriendRequest(long id, long requestSenderId, long requestReceiverId, LocalDateTime requestDate, boolean seen, boolean isAccepted) {
         this.id = id;
         this.requestSenderId = requestSenderId;
         this.requestReceiverId = requestReceiverId;
