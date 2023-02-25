@@ -7,5 +7,6 @@ import java.util.Collection;
 
 public interface FriendRequestRepository extends JpaRepository<FriendRequest, Long> {
     Collection<FriendRequest> findAllByRequestReceiverId(long receiverId);
+    Collection<FriendRequest> findAllByRequestSenderId(long senderId);
 
 }
