@@ -9,8 +9,8 @@ public class FriendRequest {
 
     @Id
     private long id;
-    private long requestSenderId;
-    private long requestReceiverId;
+    private String requestSenderUserName;
+    private String requestReceiverUserName;
     private LocalDateTime requestDate;
     private boolean seen;
     private boolean isAccepted;
@@ -21,10 +21,10 @@ public class FriendRequest {
         isAccepted = false;
     }
 
-    public FriendRequest(long id, long requestSenderId, long requestReceiverId, LocalDateTime requestDate, boolean seen, boolean isAccepted) {
+    public FriendRequest(long id, String requestSenderUserName, String requestReceiverUserName, LocalDateTime requestDate, boolean seen, boolean isAccepted) {
         this.id = id;
-        this.requestSenderId = requestSenderId;
-        this.requestReceiverId = requestReceiverId;
+        this.requestSenderUserName = requestSenderUserName;
+        this.requestReceiverUserName = requestReceiverUserName;
         this.requestDate = requestDate;
         this.seen = seen;
         this.isAccepted = isAccepted;
@@ -38,20 +38,20 @@ public class FriendRequest {
         this.id = id;
     }
 
-    public long getRequestSenderId() {
-        return requestSenderId;
+    public String getRequestSenderUserName() {
+        return requestSenderUserName;
     }
 
-    public void setRequestSenderId(long requestSenderId) {
-        this.requestSenderId = requestSenderId;
+    public void setRequestSenderUserName(String requestSenderUserName) {
+        this.requestSenderUserName = requestSenderUserName;
     }
 
-    public long getRequestReceiverId() {
-        return requestReceiverId;
+    public String getRequestReceiverUserName() {
+        return requestReceiverUserName;
     }
 
-    public void setRequestReceiverId(long requestReceiverId) {
-        this.requestReceiverId = requestReceiverId;
+    public void setRequestReceiverUserName(String requestReceiverUserName) {
+        this.requestReceiverUserName = requestReceiverUserName;
     }
 
     public LocalDateTime getRequestDate() {
