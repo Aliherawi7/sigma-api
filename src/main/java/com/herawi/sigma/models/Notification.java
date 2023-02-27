@@ -1,17 +1,17 @@
 package com.herawi.sigma.models;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 public class Notification {
     @Id
+    @SequenceGenerator(name = "notification_sequence", sequenceName = "notification_sequence", initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "notification_sequence")
     private long id;
     private String title;
     private String message;
-    private long userId;
+    private String userName;
     private LocalDateTime localDateTime;
     private boolean seen;
 
@@ -19,11 +19,11 @@ public class Notification {
         this.localDateTime = LocalDateTime.now();
     }
 
-    public Notification(long id, String title, String message, long userId, LocalDateTime localDateTime, boolean isSeen) {
+    public Notification(long id, String title, String message, String userName, LocalDateTime localDateTime, boolean isSeen) {
         this.id = id;
         this.title = title;
         this.message = message;
-        this.userId = userId;
+        this.userName = userName;
         this.localDateTime = localDateTime;
         this.seen = isSeen;
     }
@@ -52,12 +52,12 @@ public class Notification {
         this.message = message;
     }
 
-    public long getUserId() {
-        return userId;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public LocalDateTime getLocalDateTime() {
