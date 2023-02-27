@@ -1,13 +1,14 @@
 package com.herawi.sigma.models;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 public class FriendRequest {
 
     @Id
+    @SequenceGenerator(name = "friendRequest_sequence", sequenceName = "friendRequest_sequence", initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "friendRequest_sequence")
     private long id;
     private String requestSenderUserName;
     private String requestReceiverUserName;
