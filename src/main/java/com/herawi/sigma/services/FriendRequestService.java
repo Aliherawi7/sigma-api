@@ -1,39 +1,108 @@
 package com.herawi.sigma.services;
 
+import com.herawi.sigma.dto.AccountDTO;
+import com.herawi.sigma.dto.FriendRequestRegisterationDTO;
 import com.herawi.sigma.models.FriendRequest;
+import com.herawi.sigma.models.Notification;
 import com.herawi.sigma.repositories.FriendRequestRepository;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.InvalidParameterException;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Service
 public class FriendRequestService {
 
     private final FriendRequestRepository friendRequestRepository;
+    private final NotificationService notificationService;
+    private final AccountService accountService;
 
-    public FriendRequestService(FriendRequestRepository friendRequestRepository) {
+    public FriendRequestService(FriendRequestRepository friendRequestRepository, NotificationService notificationService, AccountService accountService) {
         this.friendRequestRepository = friendRequestRepository;
+        this.notificationService = notificationService;
+        this.accountService = accountService;
     }
 
     /*
     * get all friend requests by senderId
     * */
-    public Collection<FriendRequest> getAllFriendRequestsBySenderId(long senderId){
-        return friendRequestRepository.findAllByRequestSenderId(senderId);
+    public Collection<FriendRequest> getAllFriendRequestsBySenderId(String senderUserName){
+        return friendRequestRepository.findAllByRequestSenderUserName(senderUserName);
     }
     /*
     * get all friend requests by receiverId
     * */
-    public Collection<FriendRequest> getAllFriendRequestsByReceiverId(long receiverId){
-        return friendRequestRepository.findAllByRequestReceiverId(receiverId);
+    public Collection<AccountDTO> getAllFriendRequestsByReceiverId(String receiverUserName){
+        return friendRequestRepository.findAllByRequestReceiverUserName(receiverUserName)
+                .stream().map( friendRequest -> accountService.getAccountByUserName(friendRequest.getRequestSenderUserName()))
+                .collect(Collectors.toList());
+    }
+    /*
+    * add a new friend request to the database for the receiver account and create a notification
+    * for the receiver account
+    * */
+    public void addFriendRequest(FriendRequest friendRequest){
+        if(friendRequest.getRequestReceiverUserName().equalsIgnoreCase(friendRequest.getRequestSenderUserName()))
+            throw new InvalidParameterException("Invalid receiver username");
+        if(friendRequestRepository.
+                findByRequestReceiverUserNameAndRequestSenderUserName(
+                        friendRequest.getRequestReceiverUserName(),
+                        friendRequest.getRequestSenderUserName()) != null){
+            throw new InvalidParameterException("You have already sent friend request");
+        }
+        if(accountService.isFriend(friendRequest.getRequestSenderUserName(), friendRequest.getRequestReceiverUserName())){
+            throw new InvalidParameterException("You are already friends together");
+        }
+        Notification notification = new Notification();
+        notification.setTitle("Friend request");
+        notification.setMessage("You have a new friend request from @" + friendRequest.getRequestSenderUserName());
+        notification.setUserName(friendRequest.getRequestReceiverUserName());
+        notificationService.addNotification(notification);
+        friendRequestRepository.save(friendRequest);
     }
 
-    public FriendRequest addFriendRequest(FriendRequest friendRequest){
-        if(friendRequest.getRequestReceiverId() == friendRequest.getRequestSenderId())
-            throw new InvalidParameterException("Invalid receiverId");
+    /*
+    * accept friend request and then remove the friend-request entity from database
+    * */
+    public void acceptFriendRequest(HttpServletRequest request, FriendRequestRegisterationDTO friendRequestRegisterationDTO){
+        boolean isFriend = accountService.getAllConnections(request)
+                .stream()
+                .anyMatch(friend -> friend.getUserName().equalsIgnoreCase(friendRequestRegisterationDTO.getRequestSenderUserName()));
+        if(!isFriend){
+            accountService.addAsConnection(request, friendRequestRegisterationDTO.getRequestSenderUserName());
 
-        return friendRequestRepository.save(friendRequest);
+            removeFriendRequest(friendRequestRegisterationDTO);
+        }
+    }
+
+    public boolean deleteFriendRequest(long id){
+        if(friendRequestRepository.findById(id).isPresent()){
+            friendRequestRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+    /*
+    * an account can delete or reject only the friend requests that are belong to its
+    * */
+    public void rejectFriendRequest(String receiverUserName, String senderUserName){
+        if(receiverUserName == null || senderUserName == null) return;
+        FriendRequest friendRequest = friendRequestRepository
+                .findByRequestReceiverUserNameAndRequestSenderUserName(receiverUserName, senderUserName);
+        if(friendRequest != null){
+            friendRequestRepository.deleteById(friendRequest.getId());
+        }
+    }
+
+    public void removeFriendRequest(FriendRequestRegisterationDTO friendRequestRegisterationDTO){
+        friendRequestRepository.deleteById(
+                friendRequestRepository.findByRequestReceiverUserNameAndRequestSenderUserName(
+                        friendRequestRegisterationDTO.getRequestReceiverUserName(),
+                        friendRequestRegisterationDTO.getRequestSenderUserName()
+                ).getId()
+        );
     }
 
 }
