@@ -47,7 +47,6 @@ public class FileStorageService {
     }
     public byte[] getProfileImage(String userId) {
         File[] file = new File(fileStorageLocation.toUri()).listFiles();
-        System.out.println(fileStorageLocation.toUri());
         assert file != null;
         File image = Stream.of(file)
                 .filter(item -> item.getName().split("\\.")[0].equalsIgnoreCase(userId))
