@@ -1,6 +1,7 @@
 package com.herawi.sigma.controllers;
 
-import com.auth0.jwt.JWT;
+import com.herawi.sigma.dto.AccountDTO;
+import com.herawi.sigma.dto.FriendRequestRegisterationDTO;
 import com.herawi.sigma.models.Account;
 import com.herawi.sigma.models.FriendRequest;
 import com.herawi.sigma.services.AccountService;
@@ -8,9 +9,14 @@ import com.herawi.sigma.services.FriendRequestService;
 import com.herawi.sigma.utils.JWTTools;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/friendRequests")
@@ -25,29 +31,50 @@ public class FriendRequestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> sendFriendRequest(HttpServletRequest request, @RequestBody FriendRequest friendRequest){
+    public ResponseEntity<?> sendFriendRequest(HttpServletRequest request, @RequestBody FriendRequestRegisterationDTO friendRequestRegisterationDTO){
         String email = JWTTools.getUserEmailByJWT(request);
+        Map<String, String> response = new HashMap<>();
         Account account = null;
         if(email != null){
             account = accountService.getAccountWithDetails(email);
         }
+        FriendRequest friendRequest = new FriendRequest();
         if(account != null){
             friendRequest.setRequestSenderUserName(account.getUserName());
+            friendRequest.setRequestReceiverUserName(friendRequestRegisterationDTO.getRequestReceiverUserName());
+            System.out.println(friendRequest.getRequestReceiverUserName() + " : "+friendRequest.getRequestSenderUserName());
             friendRequestService.addFriendRequest(friendRequest);
-            return new ResponseEntity<>(request, HttpStatus.CREATED);
+            System.out.println("request saved successfully ");
+
+            response.put("message", "request successfully sent");
+            response.put("statusCode", HttpStatus.CREATED.value()+"");
+            response.put("status", HttpStatus.CREATED.name());
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        }
+        response.put("message", "You have already sent friend request");
+        response.put("statusCode", HttpStatus.BAD_REQUEST.value()+"");
+        response.put("status", HttpStatus.BAD_REQUEST.name());
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @PostMapping("accept")
+    public ResponseEntity<?> acceptFriendRequest(HttpServletRequest request, @RequestBody FriendRequestRegisterationDTO friendRequestRegisterationDTO){
+        friendRequestService.acceptFriendRequest(request, friendRequestRegisterationDTO);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("reject")
+    public ResponseEntity<?> rejectFriendRequest(HttpServletRequest request, @RequestBody FriendRequestRegisterationDTO friendRequestRegisterationDTO){
+        String email = JWTTools.getUserEmailByJWT(request);
+        Account account =null;
+        if(email != null){
+            account = accountService.getAccountWithDetails(email);
+        }
+        if(account != null){
+            friendRequestService.rejectFriendRequest(account.getUserName(), friendRequestRegisterationDTO.getRequestSenderUserName());
+            return ResponseEntity.ok("friend request rejected successfully");
         }
         return ResponseEntity.badRequest().build();
-    }
-    @PostMapping("accept")
-    public ResponseEntity<?> acceptFriendRequest(HttpServletRequest request, @RequestBody FriendRequest friendRequest){
-        boolean isFriend = accountService.getAllConnections(request)
-                .stream()
-                .anyMatch(friend -> friend.getUserName().equals((friendRequest.getRequestReceiverUserName())));
-        if(!isFriend){
-            accountService.addAsConnection(request, friendRequest.getRequestReceiverUserName());
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.badRequest().body("You are already friends together");
     }
 
     @GetMapping("allSent")
@@ -58,7 +85,7 @@ public class FriendRequestController {
              account = accountService.getAccountWithDetails(email);
         }
         if(account != null){
-            return ResponseEntity.ok(friendRequestService.getAllFriendRequestsBySenderId(account.getId()));
+            return ResponseEntity.ok(friendRequestService.getAllFriendRequestsBySenderId(account.getUserName()));
         }
         return ResponseEntity.noContent().build();
     }
@@ -71,7 +98,7 @@ public class FriendRequestController {
           account = accountService.getAccountWithDetails(email);
         }
         if(account != null){
-            return ResponseEntity.ok(friendRequestService.getAllFriendRequestsByReceiverId(account.getId()));
+            return ResponseEntity.ok(friendRequestService.getAllFriendRequestsByReceiverId(account.getUserName()));
         }
         return ResponseEntity.noContent().build();
     }
