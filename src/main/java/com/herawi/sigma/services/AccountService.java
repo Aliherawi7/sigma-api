@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,13 +42,13 @@ public class AccountService implements UserDetailsService {
     }
 
     /*
-    * this method implemented for for UserDetailsService for authentication process
-    * in Spring security
-    * */
+     * this method implemented for for UserDetailsService for authentication process
+     * in Spring security
+     * */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Account account = accountRepository.findByEmail(email);
-        if(account == null){
+        if (account == null) {
             throw new UsernameNotFoundException("account not found");
         }
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -55,11 +56,12 @@ public class AccountService implements UserDetailsService {
                 .forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
         return new org.springframework.security.core.userdetails.User(account.getEmail(), account.getPassword(), authorities);
     }
+
     /*
-    * this method add the new account in the database with provided information
-    * and then after saving successfully in the database it returns the account information
-    * with JWT token for authorizing the account in the subsequence requests
-    * */
+     * this method add the new account in the database with provided information
+     * and then after saving successfully in the database it returns the account information
+     * with JWT token for authorizing the account in the subsequence requests
+     * */
     public ResponseEntity<?> addAccount(AccountRegistrationRequest accountRegistrationRequest) throws Exception {
         if (accountRegistrationRequest != null) {
             FilterResponse filterResponse = AccountRegistrationRequestFilter.filter(accountRegistrationRequest);
@@ -71,7 +73,7 @@ public class AccountService implements UserDetailsService {
                 Map<String, String> response = new HashMap<>();
                 response.put("errorMessage", "This email already has taken");
                 response.put("status", HttpStatus.BAD_REQUEST.name());
-                response.put("statusCode", HttpStatus.BAD_REQUEST.value()+"");
+                response.put("statusCode", HttpStatus.BAD_REQUEST.value() + "");
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
             Account account = new Account();
@@ -86,15 +88,15 @@ public class AccountService implements UserDetailsService {
             account.setPassword(bCryptPasswordEncoder.encode(accountRegistrationRequest.getPassword()));
             account = accountRepository.save(account);
             if (accountRegistrationRequest.getImg() != null && !accountRegistrationRequest.getImg().isEmpty()) {
-                fileStorageService.storeFile(accountRegistrationRequest.getImg(),account.getId()+"");
+                fileStorageService.storeFile(accountRegistrationRequest.getImg(), account.getId() + "");
             }
             Algorithm algorithm = Algorithm.HMAC256("Bearer".getBytes());
             String accessToken = JWT.create()
                     .withSubject(account.getEmail())
-                    .withExpiresAt(new Date(System.currentTimeMillis() + (1000*60*60*24*10)))
+                    .withExpiresAt(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 10)))
                     .withClaim("roles", account.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
                     .sign(algorithm);
-            RegistrationResponse registrationResponse =  new RegistrationResponse(
+            RegistrationResponse registrationResponse = new RegistrationResponse(
                     accessToken,
                     AccountDTOMapper.apply(account, accountRegistrationRequest.getImg() != null ? accountRegistrationRequest.getImg().getBytes() : null)
             );
@@ -164,16 +166,17 @@ public class AccountService implements UserDetailsService {
     /* gives the specific account detail with request header authorization */
     public AccountDTO getAccount(HttpServletRequest request) {
         String email = JWTTools.getUserEmailByJWT(request);
+        System.out.println(email);
         return getAccount(email);
     }
 
     /* give all the accounts which are saved in the database*/
-    public Collection<AccountDTO> getAllAccount(){
+    public Collection<AccountDTO> getAllAccount() {
         return accountRepository
                 .findAll()
                 .stream()
                 .map(item -> AccountDTOMapper.apply(item,
-                        fileStorageService.getProfileImage(item.getId()+""))).collect(Collectors.toList());
+                        fileStorageService.getProfileImage(item.getId() + ""))).collect(Collectors.toList());
     }
 
     /*
@@ -185,7 +188,7 @@ public class AccountService implements UserDetailsService {
         if (account == null) {
             return null;
         }
-        byte[] profileImage = fileStorageService.getProfileImage(account.getId()+"");
+        byte[] profileImage = fileStorageService.getProfileImage(account.getId() + "");
         return new AccountDTO(
                 account.getName(),
                 account.getLastName(),
@@ -198,18 +201,18 @@ public class AccountService implements UserDetailsService {
     }
 
     /* return account by userName */
-    public AccountDTO getAccountByUserName(String userName){
-        if(userName == null || userName.isEmpty()) return null;
+    public AccountDTO getAccountByUserName(String userName) {
+        if (userName == null || userName.isEmpty()) return null;
         Account account = accountRepository.findByUserName(userName);
-        if(account != null){
-            return AccountDTOMapper.apply(account, fileStorageService.getProfileImage(account.getId()+""));
+        if (account != null) {
+            return AccountDTOMapper.apply(account, fileStorageService.getProfileImage(account.getId() + ""));
         }
         return null;
     }
 
     /* return all account information by email of the account*/
-    public Account getAccountWithDetails(String email){
-        if (email != null){
+    public Account getAccountWithDetails(String email) {
+        if (email != null) {
             email = email.toLowerCase().trim();
             return accountRepository.findByEmail(email);
         }
@@ -217,37 +220,63 @@ public class AccountService implements UserDetailsService {
     }
 
 
-    /* check whether there is account with the provided email address*/
-    public boolean isAccountExistByEmail(String email){
+    /* check whether there is an account with the provided email address*/
+    public boolean isAccountExistByEmail(String email) {
         return accountRepository.existsAccountByEmail(email);
     }
 
     /*
-     * find all connections of this account
+     * find all Friends of this account
      * */
     public Collection<AccountDTO> getAllConnections(HttpServletRequest request) {
         String email = JWTTools.getUserEmailByJWT(request);
         Account currentAccount = accountRepository.findByEmail(email);
         Collection<AccountDTO> connections = new ArrayList<>();
         currentAccount.getConnections().forEach(account -> {
-            byte[] profileImage = fileStorageService.getProfileImage(account.getId()+"");
+            byte[] profileImage = fileStorageService.getProfileImage(account.getId() + "");
             connections.add(AccountDTOMapper.apply(currentAccount, profileImage));
         });
         return connections;
     }
 
     /*
-     * add someone as connection to current logged in account
+     * add someone as friend to current logged in account
      * */
-    public boolean addAsConnection(HttpServletRequest request, String targetEmail) {
+    public void addAsConnection(HttpServletRequest request, String userName) {
         String email = JWTTools.getUserEmailByJWT(request);
         Account account = accountRepository.findByEmail(email);
-        Account targetAccount = accountRepository.findByEmail(targetEmail);
+        Account targetAccount = accountRepository.findByUserName(userName);
         if (account == null || targetAccount == null)
-            return false;
-
+            return;
         account.addAccountToConnections(targetAccount);
+        targetAccount.getConnections().add(account);
+
         accountRepository.save(account);
-        return true;
+        accountRepository.save(targetAccount);
+    }
+
+    /*
+     * check if someone is friend with target account
+     * */
+    public boolean isFriend(String accountUserName, String friendUserName) {
+        return accountRepository.findByUserName(accountUserName)
+                .getConnections()
+                .stream()
+                .anyMatch(friend -> friend.getUserName().equalsIgnoreCase(friendUserName));
+
+    }
+
+    /*
+    * get all friends of the target account
+    * */
+
+    public Collection<AccountDTO> getAllFriends(String userName){
+        return accountRepository
+                .findByUserName(userName)
+                .getConnections()
+                .stream()
+                .map(account -> AccountDTOMapper
+                        .apply(account, fileStorageService.getProfileImage(account.getId() + "") ))
+                .collect(Collectors.toList());
     }
 }
