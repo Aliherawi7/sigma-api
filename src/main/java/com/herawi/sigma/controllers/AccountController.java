@@ -39,7 +39,6 @@ public class AccountController {
             return ResponseEntity.ok(accountDTO);
         }
         return ResponseEntity.noContent().build();
-
     }
 
     @GetMapping("email/{email}")
@@ -53,6 +52,11 @@ public class AccountController {
     @GetMapping("/all")
     public ResponseEntity<?> getAll(){
         return ResponseEntity.ok().body(accountService.getAllAccount());
+    }
+
+    @GetMapping("{userName}/friends")
+    public ResponseEntity<?> getAllFriends(@PathVariable String userName){
+        return ResponseEntity.ok().body(accountService.getAllFriends(userName));
     }
 
 }
