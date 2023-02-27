@@ -19,7 +19,7 @@ public class JWTTools {
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null) {
             try {
-                Algorithm algorithm = Algorithm.HMAC256("bearer".getBytes());
+                Algorithm algorithm = Algorithm.HMAC256("Bearer".getBytes());
                 JWTVerifier jwtVerifier = JWT.require(algorithm).build();
                 DecodedJWT decodedJWT = jwtVerifier.verify(authorizationHeader);
                 String email = decodedJWT.getSubject();
@@ -46,7 +46,7 @@ public class JWTTools {
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null) {
             try {
-                Algorithm algorithm = Algorithm.HMAC256("bearer".getBytes());
+                Algorithm algorithm = Algorithm.HMAC256("Bearer".getBytes());
                 JWTVerifier jwtVerifier = JWT.require(algorithm).build();
                 DecodedJWT decodedJWT = jwtVerifier.verify(authorizationHeader);
                 return decodedJWT.getSubject();
