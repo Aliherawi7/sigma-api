@@ -31,7 +31,7 @@ public class NotificationService {
             System.out.println("user id: "+account.getId());
         }
         if(account != null){
-            notifications = notificationRepository.findAllByUserId(account.getId());
+            notifications = notificationRepository.findAllByUserName(account.getUserName());
         }
         return notifications;
     }
@@ -44,7 +44,7 @@ public class NotificationService {
             account = accountService.getAccountWithDetails(email);
         }
         if(account != null){
-            notifications = notificationRepository.findAllBySeenFalseAndUserId(account.getId());
+            notifications = notificationRepository.findAllBySeenFalseAndUserName(account.getUserName());
         }
         return notifications;
     }
