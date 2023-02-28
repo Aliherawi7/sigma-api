@@ -135,12 +135,12 @@
     "img": null
   },
   {
-    "name": "Alex",
-    "lastName": "Parker",
+    "name": "Julia",
+    "lastName": "",
     "password":"123456",
     "dob": "2000-02-03",
-    "email": "AlexParker@gmail.com",
-    "gender": "Male",
+    "email": "Juliayoung@gmail.com",
+    "gender": "Female",
     "img": null
   },
   {
