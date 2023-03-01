@@ -68,7 +68,6 @@ public class AccountService implements UserDetailsService {
                 return new ResponseEntity<>(filterResponse, HttpStatus.BAD_REQUEST);
             }
             if (accountRepository.existsAccountByEmail(accountRegistrationRequest.getEmail())) {
-                System.out.println("account already exist");
                 Map<String, String> response = new HashMap<>();
                 response.put("errorMessage", "This email already has taken");
                 response.put("status", HttpStatus.BAD_REQUEST.name());
