@@ -161,10 +161,9 @@ public class AccountService implements UserDetailsService {
         return false;
     }
 
-    /* gives the specific account detail with request header authorization */
+    /* gives the specific account detail with request header authorization or (jwt token) */
     public AccountDTO getAccount(HttpServletRequest request) {
         String email = JWTTools.getUserEmailByJWT(request);
-        System.out.println(email);
         return getAccount(email);
     }
 
@@ -182,7 +181,6 @@ public class AccountService implements UserDetailsService {
      * */
     public AccountDTO getAccount(String email) {
         Account account = accountRepository.findByEmail(email);
-        System.out.println(accountRepository.findByEmail(email));
         if (account == null) {
             return null;
         }
