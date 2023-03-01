@@ -150,9 +150,55 @@ class AccountServiceTest {
         //then
         assertFalse(underTest.updateAccount(httpServletRequest, null));
     }
-
+    /* test delete account method while email and password are correct */
     @Test
-    void deleteAccount() {
+    void deleteAccountIfEmailAndPasswordAreCorrect() throws Exception {
+        //given
+        String email = account.getEmail();
+        String password = account.getPassword();
+        //when
+        when(accountRepository.existsAccountByEmail(email)).thenReturn(true);
+        when(accountRepository.findByEmail(email)).thenReturn(account);
+        when(bCryptPasswordEncoder.matches(password, account.getPassword())).thenReturn(true);
+
+        //then
+        assertTrue( underTest.deleteAccount(email, password));
+        verify(accountRepository).existsAccountByEmail(email);
+        verify(accountRepository).findByEmail(email);
+        verify(accountRepository).delete(account);
+
+    }
+
+    /* test delete account method while email is correct but password is not correct */
+    @Test
+    void deleteAccountIfEmailAndPasswordAreNotCorrect() throws Exception {
+        //given
+        String email = account.getEmail();
+        String password = account.getPassword();
+        //when
+        when(accountRepository.existsAccountByEmail(email)).thenReturn(true);
+        when(accountRepository.findByEmail(email)).thenReturn(account);
+        when(bCryptPasswordEncoder.matches(password, account.getPassword())).thenReturn(false);
+
+        //then
+        assertThrows(Exception.class, () -> underTest.deleteAccount(email, password));
+        verify(accountRepository).existsAccountByEmail(email);
+        verify(accountRepository).findByEmail(email);
+
+    }
+
+    /* test delete account method while email is not correct */
+    @Test
+    void deleteAccountIfEmailIsNotCorrect() throws Exception {
+        //given
+        String email = account.getEmail();
+        String password = account.getPassword();
+        //when
+        when(accountRepository.existsAccountByEmail(email)).thenReturn(false);
+
+        //then
+        assertFalse(underTest.deleteAccount(email, password));
+        verify(accountRepository).existsAccountByEmail(email);
     }
 
     @Test
