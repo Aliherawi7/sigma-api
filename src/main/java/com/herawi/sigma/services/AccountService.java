@@ -147,7 +147,7 @@ public class AccountService implements UserDetailsService {
         return false;
     }
 
-    public boolean deleteAccount(String userName, String email, String password) throws Exception {
+    public boolean deleteAccount(String email, String password) throws Exception {
         if (accountRepository.existsAccountByEmail(email)) {
             Account p = accountRepository.findByEmail(email);
             boolean arePasswordsMatched = bCryptPasswordEncoder.matches(password, p.getPassword());
