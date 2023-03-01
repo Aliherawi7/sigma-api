@@ -34,6 +34,7 @@ class AccountServiceTest {
     private AccountService underTest;
     private Account account;
     private AccountRegistrationRequest request;
+    private String token;
 
     @BeforeEach
     void setUp() {
@@ -55,6 +56,9 @@ class AccountServiceTest {
         account.setUserName("aliherawi");
         account.setGender(Gender.MALE);
         account.setPassword("123456");
+        token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9." +
+                "eyJzdWIiOiJhbGloZXJhd2lAZ21haWwuY29tIiwicm9sZXMiOltdLCJleHAiOjE2NzgzMjAxNjB9." +
+                "iKsyy0IhHva5DA2PFRxISjRtS2rKZd6eEEx6bli4zcQ";
     }
 
     /* test if there is an account with the provided email*/
@@ -126,10 +130,7 @@ class AccountServiceTest {
     /* test if account is not already exist and update it*/
     @Test
     void updateAccountIfAccountIsNotAvailable() throws Exception {
-        //given
-        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9." +
-                "eyJzdWIiOiJhbGloZXJhd2lAZ21haWwuY29tIiwicm9sZXMiOltdLCJleHAiOjE2NzgzMjAxNjB9." +
-                "iKsyy0IhHva5DA2PFRxISjRtS2rKZd6eEEx6bli4zcQ";
+
         //when
         String email =  account.getEmail();
         when(accountRepository.existsAccountByEmail(email)).thenReturn(false);
@@ -200,9 +201,49 @@ class AccountServiceTest {
         assertFalse(underTest.deleteAccount(email, password));
         verify(accountRepository).existsAccountByEmail(email);
     }
-
+    /* test getAccount method which take HttpServletRequest as parameter */
     @Test
-    void getAccount() {
+    void getAccountWhichTakesHttpServletRequestAsParameter() {
+        // given
+        String email = account.getEmail();
+
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(token);
+        when(accountRepository.findByEmail(email)).thenReturn(account);
+
+        //then
+        assertTrue(underTest.getAccount(httpServletRequest).getEmail().equalsIgnoreCase(email));
+
+    }
+
+    /* test getAccount method which take String email as parameter if email is incorrect */
+    @Test
+    void getAccountIfEmailIsCorrect() {
+        // given
+        String email = account.getEmail();
+        String userId = account.getId()+"";
+
+        //when
+        when(accountRepository.findByEmail(email)).thenReturn(account);
+        when(fileStorageService.getProfileImage(userId)).thenReturn(new byte[10]);
+
+        //then
+        assertTrue(underTest.getAccount(email).getEmail().equalsIgnoreCase(email));
+        verify(accountRepository).findByEmail(email);
+        verify(fileStorageService).getProfileImage(userId);
+    }
+
+    /* test getAccount method which take String email as parameter if email is incorrect */
+    @Test
+    void getAccountIfEmailIsInCorrect() {
+        // given
+        String email = account.getEmail();
+
+        //when
+        when(accountRepository.findByEmail(email)).thenReturn(null);
+
+        //then
+        assertNull(underTest.getAccount(email));
+        verify(accountRepository).findByEmail(email);
     }
 
     @Test
