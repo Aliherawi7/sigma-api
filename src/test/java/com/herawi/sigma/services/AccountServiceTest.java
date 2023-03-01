@@ -17,6 +17,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -39,7 +43,6 @@ class AccountServiceTest {
     @BeforeEach
     void setUp() {
         underTest = new AccountService(accountRepository, bCryptPasswordEncoder, fileStorageService);
-        ArgumentCaptor<MultipartFile> captor = ArgumentCaptor.forClass(MultipartFile.class);
         request = new AccountRegistrationRequest(
                 "ali",
                 "herawi",
@@ -47,7 +50,7 @@ class AccountServiceTest {
                 "123456",
                 "2000-02-09",
                 Gender.MALE,
-                captor.capture()
+                null
         );
         account = new Account();
         account.setName("ali");
@@ -248,11 +251,18 @@ class AccountServiceTest {
 
     @Test
     void getAllAccount() {
+        List<Account> accounts = new ArrayList<>();
+        accounts.add(account);
+        //when
+        when(accountRepository.findAll()).thenReturn(accounts);
+        when(fileStorageService.getProfileImage(account.getId()+"")).thenReturn(new byte[10]);
+        underTest.getAllAccount();
+
+        //then
+        verify(accountRepository).findAll();
+        verify(fileStorageService).getProfileImage(account.getId()+"");
     }
 
-    @Test
-    void testGetAccount() {
-    }
 
     @Test
     void getAccountByUserName() {
