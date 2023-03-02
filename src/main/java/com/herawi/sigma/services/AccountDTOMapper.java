@@ -12,7 +12,7 @@ public class AccountDTOMapper {
                 account.getUserName(),
                 profileImage,
                 account.getEmail(),
-                account.getConnections().size(),
+                account.getFriends().size(),
                 account.getGender()
         );
     }
