@@ -314,18 +314,69 @@ class AccountServiceTest {
 
     @Test
     void getAccountWithDetails() {
+        // given
+        String email = account.getEmail();
+
+        //when
+
+        when(accountRepository.findByEmail(email)).thenReturn(account);
+
+        //then
+        assertEquals(email, underTest.getAccountWithDetails(email).getEmail());
+        verify(accountRepository).findByEmail(email);
+
+    }
+    /* test account is exist by email */
+    @Test
+    void isAccountExistByEmailIfExist() {
+        // given
+        String email = account.getEmail();
+
+        //when
+        when(accountRepository.existsAccountByEmail(email)).thenReturn(true);
+
+        //then
+        assertTrue(accountRepository.existsAccountByEmail(email));
+        verify(accountRepository).existsAccountByEmail(email);
+
     }
 
+    /* test if account is not exist by email */
     @Test
-    void isAccountExistByEmail() {
+    void isAccountExistByEmailIfNotExist() {
+        // given
+        String email = account.getEmail();
+
+        //when
+        when(accountRepository.existsAccountByEmail(email)).thenReturn(false);
+
+        //then
+        assertFalse(accountRepository.existsAccountByEmail(email));
+        verify(accountRepository).existsAccountByEmail(email);
+
     }
 
-    @Test
-    void getAllConnections() {
-    }
 
     @Test
-    void addAsConnection() {
+    void addAsFriend() {
+        //given
+        String email = account.getEmail();
+        Account targetAccount = new Account();
+        targetAccount.setName("alex");
+        targetAccount.setUserName("alex_parker");
+        targetAccount.setEmail("alex_parker@gmail.com");
+
+        //when
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(token);
+        when(accountRepository.findByEmail(email)).thenReturn(account);
+        when(accountRepository.findByUserName(targetAccount.getUserName())).thenReturn(targetAccount);
+        underTest.addAsFriend(httpServletRequest, targetAccount.getUserName());
+
+        //then
+        verify(accountRepository).findByEmail(email);
+        verify(accountRepository).findByUserName(targetAccount.getUserName());
+        verify(accountRepository).save(account);
+        verify(accountRepository).save(targetAccount);
     }
 
     @Test
