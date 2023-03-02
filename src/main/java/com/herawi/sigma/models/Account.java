@@ -39,7 +39,7 @@ public class Account {
     private Date lockTime;
     private String location;
     @ManyToMany(fetch =FetchType.EAGER)
-    private Collection<Account> connections = new HashSet<>();
+    private Collection<Account> friends = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -189,20 +189,20 @@ public class Account {
         return LocalDate.now().getYear() - dob.getYear();
     }
 
-    public Collection<Account> getConnections() {
-        return connections;
+    public Collection<Account> getFriends() {
+        return friends;
     }
 
-    public void setConnections(Collection<Account> connections) {
-        this.connections = connections;
+    public void setFriends(Collection<Account> friends) {
+        this.friends = friends;
     }
 
-    public void addAccountToConnections(Account account){
-        connections.add(account);
+    public void addAccountToFriends(Account account){
+        friends.add(account);
     }
 
-    public boolean removeAccountFromConnections(Account p){
-        return connections.remove(p);
+    public boolean removeAccountFromFriends(Account p){
+        return friends.remove(p);
     }
 
     public Gender getGender() {

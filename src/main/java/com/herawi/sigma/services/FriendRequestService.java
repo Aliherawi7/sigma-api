@@ -71,7 +71,7 @@ public class FriendRequestService {
                 .stream()
                 .anyMatch(friend -> friend.getUserName().equalsIgnoreCase(friendRequestRegisterationDTO.getRequestSenderUserName()));
         if(!isFriend){
-            accountService.addAsConnection(request, friendRequestRegisterationDTO.getRequestSenderUserName());
+            accountService.addAsFriend(request, friendRequestRegisterationDTO.getRequestSenderUserName());
 
             removeFriendRequest(friendRequestRegisterationDTO);
         }

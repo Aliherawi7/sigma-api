@@ -191,7 +191,7 @@ public class AccountService implements UserDetailsService {
                 account.getUserName(),
                 profileImage,
                 account.getEmail(),
-                account.getConnections().size(),
+                account.getFriends().size(),
                 account.getGender()
         );
     }
@@ -222,30 +222,16 @@ public class AccountService implements UserDetailsService {
     }
 
     /*
-     * find all Friends of this account
-     * */
-    public Collection<AccountDTO> getAllConnections(HttpServletRequest request) {
-        String email = JWTTools.getUserEmailByJWT(request);
-        Account currentAccount = accountRepository.findByEmail(email);
-        Collection<AccountDTO> connections = new ArrayList<>();
-        currentAccount.getConnections().forEach(account -> {
-            byte[] profileImage = fileStorageService.getProfileImage(account.getId() + "");
-            connections.add(AccountDTOMapper.apply(currentAccount, profileImage));
-        });
-        return connections;
-    }
-
-    /*
      * add someone as friend to current logged in account
      * */
-    public void addAsConnection(HttpServletRequest request, String userName) {
+    public void addAsFriend(HttpServletRequest request, String userName) {
         String email = JWTTools.getUserEmailByJWT(request);
         Account account = accountRepository.findByEmail(email);
         Account targetAccount = accountRepository.findByUserName(userName);
         if (account == null || targetAccount == null)
             return;
-        account.addAccountToConnections(targetAccount);
-        targetAccount.getConnections().add(account);
+        account.addAccountToFriends(targetAccount);
+        targetAccount.getFriends().add(account);
 
         accountRepository.save(account);
         accountRepository.save(targetAccount);
@@ -256,7 +242,7 @@ public class AccountService implements UserDetailsService {
      * */
     public boolean isFriend(String accountUserName, String friendUserName) {
         return accountRepository.findByUserName(accountUserName)
-                .getConnections()
+                .getFriends()
                 .stream()
                 .anyMatch(friend -> friend.getUserName().equalsIgnoreCase(friendUserName));
 
@@ -269,7 +255,7 @@ public class AccountService implements UserDetailsService {
     public Collection<AccountDTO> getAllFriends(String userName){
         return accountRepository
                 .findByUserName(userName)
-                .getConnections()
+                .getFriends()
                 .stream()
                 .map(account -> AccountDTOMapper
                         .apply(account, fileStorageService.getProfileImage(account.getId() + "") ))
