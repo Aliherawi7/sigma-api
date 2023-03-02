@@ -5,6 +5,7 @@ import com.herawi.sigma.dto.FriendRequestRegisterationDTO;
 import com.herawi.sigma.models.FriendRequest;
 import com.herawi.sigma.models.Notification;
 import com.herawi.sigma.repositories.FriendRequestRepository;
+import com.herawi.sigma.utils.JWTTools;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -67,7 +68,8 @@ public class FriendRequestService {
     * accept friend request and then remove the friend-request entity from database
     * */
     public void acceptFriendRequest(HttpServletRequest request, FriendRequestRegisterationDTO friendRequestRegisterationDTO){
-        boolean isFriend = accountService.getAllConnections(request)
+        String userName = accountService.getAccountWithDetails(JWTTools.getUserEmailByJWT(request)).getUserName();
+        boolean isFriend = accountService.getAllFriends(userName)
                 .stream()
                 .anyMatch(friend -> friend.getUserName().equalsIgnoreCase(friendRequestRegisterationDTO.getRequestSenderUserName()));
         if(!isFriend){
