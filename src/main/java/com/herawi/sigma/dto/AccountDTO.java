@@ -9,20 +9,20 @@ public class AccountDTO {
     private String lastName;
     private String userName;
     private String email;
-    private long connections;
+    private long friends;
     private Gender gender;
     private byte[] profileImage;
 
     public AccountDTO() {
     }
 
-    public AccountDTO(String name, String lastName,String userName, byte[] profileImage, String email, long connections, Gender gender) {
+    public AccountDTO(String name, String lastName, String userName, byte[] profileImage, String email, long friends, Gender gender) {
         this.name = name;
         this.lastName = lastName;
         this.userName = userName;
         this.profileImage = profileImage;
         this.email = email;
-        this.connections = connections;
+        this.friends = friends;
         this.gender = gender;
     }
 
@@ -65,12 +65,12 @@ public class AccountDTO {
         this.email = email;
     }
 
-    public long getConnections() {
-        return connections;
+    public long getFriends() {
+        return friends;
     }
 
-    public void setConnections(long connections) {
-        this.connections = connections;
+    public void setFriends(long friends) {
+        this.friends = friends;
     }
 
     public Gender getGender() {
