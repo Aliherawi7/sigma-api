@@ -78,6 +78,7 @@ class AccountServiceTest {
         verify(accountRepository).findByEmail(email);
 
     }
+
     /* test if there is an account with the provided email*/
     @Test
     void loadUserByUsernameIfTheAccountIsNotAvailable() {
@@ -92,6 +93,7 @@ class AccountServiceTest {
         verify(accountRepository).findByEmail(email);
 
     }
+
     /* test if account created and saved successfully and email has not taken already*/
     @Test
     void addAccountIfEmailHasNotTakenAlready() throws Exception {
@@ -103,6 +105,7 @@ class AccountServiceTest {
         verify(accountRepository).existsAccountByEmail(request.getEmail());
         verify(accountRepository).save(argumentCaptor.capture());
     }
+
     /* test if account created and saved successfully and email has already taken */
     @Test
     void addAccountIfEmailHasTakenAlready() throws Exception {
@@ -112,14 +115,15 @@ class AccountServiceTest {
         //then
         verify(accountRepository).existsAccountByEmail(request.getEmail());
     }
+
     /* test if account is already exist and update it*/
     @Test
     void updateAccountIfAccountIsAvailable() throws Exception {
         //given
-       ArgumentCaptor<Account> argumentCaptor =
+        ArgumentCaptor<Account> argumentCaptor =
                 ArgumentCaptor.forClass(Account.class);
         //when
-        String email =  account.getEmail();
+        String email = account.getEmail();
         when(accountRepository.existsAccountByEmail(email)).thenReturn(true);
         when(accountRepository.findByEmail(email)).thenReturn(account);
         underTest.updateAccount(httpServletRequest, request);
@@ -135,7 +139,7 @@ class AccountServiceTest {
     void updateAccountIfAccountIsNotAvailable() throws Exception {
 
         //when
-        String email =  account.getEmail();
+        String email = account.getEmail();
         when(accountRepository.existsAccountByEmail(email)).thenReturn(false);
         when(httpServletRequest.getHeader("Authorization")).thenReturn(token);
 
@@ -144,6 +148,7 @@ class AccountServiceTest {
                 () -> underTest.updateAccount(httpServletRequest, request));
         verify(accountRepository).existsAccountByEmail(email);
     }
+
     /* test if accountRegistrationRequest is null or empty (the request body is empty) */
     @Test
     void updateAccountIfAccountRegistrationRequestIsNull() throws Exception {
@@ -154,6 +159,7 @@ class AccountServiceTest {
         //then
         assertFalse(underTest.updateAccount(httpServletRequest, null));
     }
+
     /* test delete account method while email and password are correct */
     @Test
     void deleteAccountIfEmailAndPasswordAreCorrect() throws Exception {
@@ -166,7 +172,7 @@ class AccountServiceTest {
         when(bCryptPasswordEncoder.matches(password, account.getPassword())).thenReturn(true);
 
         //then
-        assertTrue( underTest.deleteAccount(email, password));
+        assertTrue(underTest.deleteAccount(email, password));
         verify(accountRepository).existsAccountByEmail(email);
         verify(accountRepository).findByEmail(email);
         verify(accountRepository).delete(account);
@@ -204,6 +210,7 @@ class AccountServiceTest {
         assertFalse(underTest.deleteAccount(email, password));
         verify(accountRepository).existsAccountByEmail(email);
     }
+
     /* test getAccount method which take HttpServletRequest as parameter */
     @Test
     void getAccountWhichTakesHttpServletRequestAsParameter() {
@@ -223,7 +230,7 @@ class AccountServiceTest {
     void getAccountIfEmailIsCorrect() {
         // given
         String email = account.getEmail();
-        String userId = account.getId()+"";
+        String userId = account.getId() + "";
 
         //when
         when(accountRepository.findByEmail(email)).thenReturn(account);
@@ -255,18 +262,55 @@ class AccountServiceTest {
         accounts.add(account);
         //when
         when(accountRepository.findAll()).thenReturn(accounts);
-        when(fileStorageService.getProfileImage(account.getId()+"")).thenReturn(new byte[10]);
+        when(fileStorageService.getProfileImage(account.getId() + "")).thenReturn(new byte[10]);
         underTest.getAllAccount();
 
         //then
         verify(accountRepository).findAll();
-        verify(fileStorageService).getProfileImage(account.getId()+"");
+        verify(fileStorageService).getProfileImage(account.getId() + "");
     }
 
 
     @Test
-    void getAccountByUserName() {
+    void getAccountByUserNameIfUserNameIsValid() {
+        // given
+        String userName = account.getUserName();
+
+        //when
+        when(accountRepository.findByUserName(userName)).thenReturn(account);
+        when(fileStorageService.getProfileImage(account.getId() + "")).thenReturn(new byte[0]);
+
+        //then
+        assertEquals(userName, underTest.getAccountByUserName(userName).getUserName());
+        verify(accountRepository).findByUserName(userName);
+        verify(fileStorageService).getProfileImage(account.getId() + "");
     }
+
+    /*test getAccountByUserName if username is invalid*/
+    @Test
+    void getAccountByUserNameIfUserNameIsInvalid() {
+        //when
+        String userName = account.getUserName();
+
+        //then
+        assertNull(underTest.getAccountByUserName(userName));
+
+    }
+
+    /*test getAccountByUserName if account is not available*/
+    @Test
+    void getAccountByUserNameIfAccountIsNotAvailable() {
+        //given
+        String userName = account.getUserName();
+
+        //when
+        when(accountRepository.findByUserName(userName)).thenReturn(null);
+
+        //then
+        assertNull(underTest.getAccountByUserName(userName));
+        verify(accountRepository).findByUserName(userName);
+    }
+
 
     @Test
     void getAccountWithDetails() {
