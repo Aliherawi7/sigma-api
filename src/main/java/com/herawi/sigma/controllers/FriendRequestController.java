@@ -9,12 +9,8 @@ import com.herawi.sigma.services.FriendRequestService;
 import com.herawi.sigma.utils.JWTTools;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,9 +38,7 @@ public class FriendRequestController {
         if(account != null){
             friendRequest.setRequestSenderUserName(account.getUserName());
             friendRequest.setRequestReceiverUserName(friendRequestRegisterationDTO.getRequestReceiverUserName());
-            System.out.println(friendRequest.getRequestReceiverUserName() + " : "+friendRequest.getRequestSenderUserName());
             friendRequestService.addFriendRequest(friendRequest);
-            System.out.println("request saved successfully ");
 
             response.put("message", "request successfully sent");
             response.put("statusCode", HttpStatus.CREATED.value()+"");
