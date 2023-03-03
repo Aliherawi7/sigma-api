@@ -31,7 +31,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         if (request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/accounts")) {
-            System.out.println("skip the filtering");
             filterChain.doFilter(request, response);
         }else {
             String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -48,7 +47,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                             new UsernamePasswordAuthenticationToken(email, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                    System.out.println("after filtering successfully");
                     filterChain.doFilter(request, response);
                 }catch (Exception e){
                     Map<String, String> error = new HashMap<>();
