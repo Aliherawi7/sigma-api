@@ -1,6 +1,7 @@
 package com.herawi.sigma.services;
 
 import com.herawi.sigma.constants.Gender;
+import com.herawi.sigma.dto.AccountDTO;
 import com.herawi.sigma.dto.AccountRegistrationRequest;
 import com.herawi.sigma.filters.AccountRegistrationRequestFilter;
 import com.herawi.sigma.models.Account;
@@ -381,9 +382,29 @@ class AccountServiceTest {
 
     @Test
     void isFriend() {
+        //given
+        String accountUsername = account.getUserName();
+        Account friend = new Account();
+        friend.setUserName("alex_parker");
+        account.addAccountToFriends(friend);
+
+        //when
+        when(accountRepository.findByUserName(accountUsername)).thenReturn(account);
+
+        //then
+        assertTrue(underTest.isFriend(accountUsername, friend.getUserName()));
+        verify(accountRepository).findByUserName(accountUsername);
     }
 
     @Test
     void getAllFriends() {
+        String username = account.getUserName();
+
+        //when
+        when(accountRepository.findByUserName(username)).thenReturn(account);
+
+        //then
+        underTest.getAllFriends(username);
+        verify(accountRepository).findByUserName(username);
     }
 }
