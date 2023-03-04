@@ -1,6 +1,5 @@
 package com.herawi.sigma.controllers;
 
-import com.herawi.sigma.dto.AccountDTO;
 import com.herawi.sigma.dto.FriendRequestRegisterationDTO;
 import com.herawi.sigma.models.Account;
 import com.herawi.sigma.models.FriendRequest;
