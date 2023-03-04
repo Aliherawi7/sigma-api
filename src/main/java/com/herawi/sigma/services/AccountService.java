@@ -120,8 +120,7 @@ public class AccountService implements UserDetailsService {
                 }
             }
             if (accountRegistrationRequest.getEmail() != null) {
-                if (AccountRegistrationRequestFilter.filterEmail(accountRegistrationRequest.getEmail())
-                        && !accountRepository.existsAccountByEmail(accountRegistrationRequest.getEmail())) {
+                if (AccountRegistrationRequestFilter.filterEmail(accountRegistrationRequest.getEmail())) {
                     account.setEmail(accountRegistrationRequest.getEmail());
                 }
             }
