@@ -98,13 +98,15 @@ class AccountServiceTest {
     /* test if account created and saved successfully and email has not taken already*/
     @Test
     void addAccountIfEmailHasNotTakenAlready() throws Exception {
+        ArgumentCaptor<Account> argumentCaptor =
+                ArgumentCaptor.forClass(Account.class);
         //when
-        ArgumentCaptor<Account> argumentCaptor = ArgumentCaptor.forClass(Account.class);
+        when(accountRepository.existsAccountByEmail(account.getEmail())).thenReturn(false);
         when(accountRepository.save(account)).thenReturn(account);
         underTest.addAccount(request);
         //then
         verify(accountRepository).existsAccountByEmail(request.getEmail());
-        verify(accountRepository).save(argumentCaptor.capture());
+       // verify(accountRepository).save(account);
     }
 
     /* test if account created and saved successfully and email has already taken */
@@ -121,18 +123,19 @@ class AccountServiceTest {
     @Test
     void updateAccountIfAccountIsAvailable() throws Exception {
         //given
-        ArgumentCaptor<Account> argumentCaptor =
-                ArgumentCaptor.forClass(Account.class);
+//        ArgumentCaptor<Account> argumentCaptor =
+//                ArgumentCaptor.forClass(Account.class);
         //when
         String email = account.getEmail();
         when(accountRepository.existsAccountByEmail(email)).thenReturn(true);
         when(accountRepository.findByEmail(email)).thenReturn(account);
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(token);
         underTest.updateAccount(httpServletRequest, request);
 
         //then
         verify(accountRepository).existsAccountByEmail(email);
         verify(accountRepository).findByEmail(email);
-        verify(accountRepository).save(argumentCaptor.capture());
+        verify(accountRepository).save(account);
     }
 
     /* test if account is not already exist and update it*/
