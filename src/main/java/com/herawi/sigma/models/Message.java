@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 @Entity
-public class Message {
+public class Message  implements Comparable<Message>{
     @Id
     private long id;
     private String text;
@@ -74,5 +74,10 @@ public class Message {
 
     public void setSeen(boolean seen) {
         this.seen = seen;
+    }
+
+    @Override
+    public int compareTo(Message o) {
+        return this.getDateTime().compareTo(o.dateTime);
     }
 }
