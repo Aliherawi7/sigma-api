@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("api/friendRequests")
+@RequestMapping("api/v1/friendRequests")
 public class FriendRequestController {
 
     private final FriendRequestService friendRequestService;

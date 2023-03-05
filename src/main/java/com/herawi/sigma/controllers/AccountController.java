@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping( value = "api/accounts", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping( value = "api/v1/accounts", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class AccountController {
 
     private final AccountService accountService;

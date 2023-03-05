@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
 @RestController
-@RequestMapping(value = "api/notifications")
+@RequestMapping(value = "api/v1/notifications")
 public class NotificationController {
 
     private final NotificationService notificationService;
