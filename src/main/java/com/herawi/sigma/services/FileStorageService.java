@@ -1,13 +1,21 @@
 package com.herawi.sigma.services;
 
 import com.herawi.sigma.properties.FileStorageProperties;
+import javafx.application.Application;
+import org.apache.coyote.http2.Http2Protocol;
+import org.apache.tomcat.util.net.openssl.ciphers.Protocol;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import sun.security.ssl.ProtocolVersion;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,6 +24,10 @@ import java.util.stream.Stream;
 
 @Service
 public class FileStorageService {
+    @Value("host.name")
+    private String hostName;
+
+
     private final Path fileStorageLocation;
 
     @Autowired
@@ -31,6 +43,9 @@ public class FileStorageService {
         }
     }
 
+    /*
+    * store the file in the profile picture directory
+    * */
     public void storeFile(MultipartFile multipartFile, String userId) throws IOException {
         if(multipartFile == null || userId == null) return;
         // Normalize file name
@@ -45,6 +60,11 @@ public class FileStorageService {
         Path targetLocation = this.fileStorageLocation.resolve(userId+"."+extension);
         Files.copy(multipartFile.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
     }
+
+    /*
+    * get the file by user id from the profile picture directory
+    *
+    * */
     public byte[] getProfileImage(String userId) {
         File[] file = new File(fileStorageLocation.toUri()).listFiles();
         assert file != null;
@@ -64,6 +84,7 @@ public class FileStorageService {
         }
         return imageBytes;
     }
+
     public String storeFile(File file , String userId) throws IOException {
         assert file != null;
         String fileName = StringUtils.getFilename(file.getName());
