@@ -4,16 +4,22 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.herawi.sigma.services.AccountService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+@Component
 public class JWTTools {
+    @Autowired
+    private static AccountService accountService;
 
     public static boolean testJWTOfUser(HttpServletRequest request, String userEmail){
         String authorizationHeader = request.getHeader("Authorization");
@@ -56,6 +62,11 @@ public class JWTTools {
         }else{
             return null;
         }
+    }
+
+    public static String getUsernameByJWT(HttpServletRequest request){
+        String email = getUserEmailByJWT(request);
+        return accountService.getAccountWithDetails(email).getUserName();
     }
 
 }
