@@ -11,16 +11,16 @@ public class AccountDTO {
     private String email;
     private long friends;
     private Gender gender;
-    private byte[] profileImage;
+    private String profilePictureUrl;
 
     public AccountDTO() {
     }
 
-    public AccountDTO(String name, String lastName, String userName, byte[] profileImage, String email, long friends, Gender gender) {
+    public AccountDTO(String name, String lastName, String userName, String profilePictureUrl, String email, long friends, Gender gender) {
         this.name = name;
         this.lastName = lastName;
         this.userName = userName;
-        this.profileImage = profileImage;
+        this.profilePictureUrl = profilePictureUrl;
         this.email = email;
         this.friends = friends;
         this.gender = gender;
@@ -50,13 +50,14 @@ public class AccountDTO {
         this.userName = userName;
     }
 
-    public byte[] getProfileImage() {
-        return profileImage;
+    public String getProfilePictureUrl() {
+        return profilePictureUrl;
     }
 
-    public void setProfileImage(byte[] profileImage) {
-        this.profileImage = profileImage;
+    public void setProfilePictureUrl(String profilePictureUrl) {
+        this.profilePictureUrl = profilePictureUrl;
     }
+
     public String getEmail() {
         return email;
     }
