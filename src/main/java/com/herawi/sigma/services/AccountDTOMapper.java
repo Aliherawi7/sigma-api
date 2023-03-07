@@ -1,16 +1,21 @@
 package com.herawi.sigma.services;
 
+import com.herawi.sigma.constants.APIEndpoints;
 import com.herawi.sigma.dto.AccountDTO;
 import com.herawi.sigma.models.Account;
+import org.springframework.stereotype.Component;
+
+import java.util.function.Function;
 
 
-public class AccountDTOMapper {
-    public static AccountDTO apply(Account account, byte[] profileImage) {
+@Component
+public class AccountDTOMapper implements Function<Account, AccountDTO> {
+    public AccountDTO apply(Account account) {
         return  new AccountDTO(
                 account.getName(),
                 account.getLastName(),
                 account.getUserName(),
-                profileImage,
+                APIEndpoints.PROFILE_PICTURE.getValue()+account.getId(),
                 account.getEmail(),
                 account.getFriends().size(),
                 account.getGender()
