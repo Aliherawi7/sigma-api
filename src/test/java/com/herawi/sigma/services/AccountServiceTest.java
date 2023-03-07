@@ -1,9 +1,7 @@
 package com.herawi.sigma.services;
 
 import com.herawi.sigma.constants.Gender;
-import com.herawi.sigma.dto.AccountDTO;
 import com.herawi.sigma.dto.AccountRegistrationRequest;
-import com.herawi.sigma.filters.AccountRegistrationRequestFilter;
 import com.herawi.sigma.models.Account;
 import com.herawi.sigma.repositories.AccountRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,12 +12,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,6 +32,8 @@ class AccountServiceTest {
     private FileStorageService fileStorageService;
     @Mock
     HttpServletRequest httpServletRequest;
+    @Mock
+    private AccountDTOMapper accountDTOMapper;
     private AccountService underTest;
     private Account account;
     private AccountRegistrationRequest request;
@@ -43,7 +41,11 @@ class AccountServiceTest {
 
     @BeforeEach
     void setUp() {
-        underTest = new AccountService(accountRepository, bCryptPasswordEncoder, fileStorageService);
+        underTest = new AccountService(
+                accountRepository,
+                bCryptPasswordEncoder,
+                fileStorageService,
+                accountDTOMapper);
         request = new AccountRegistrationRequest(
                 "ali",
                 "herawi",
