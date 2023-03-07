@@ -2,9 +2,11 @@ package com.herawi.sigma.services;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.herawi.sigma.constants.APIEndpoints;
 import com.herawi.sigma.dto.AccountDTO;
 import com.herawi.sigma.dto.AccountRegistrationRequest;
 import com.herawi.sigma.dto.RegistrationResponse;
+import com.herawi.sigma.exceptions.AccountNotFoundException;
 import com.herawi.sigma.filters.AccountRegistrationRequestFilter;
 import com.herawi.sigma.filters.FilterResponse;
 import com.herawi.sigma.models.Account;
@@ -30,14 +32,16 @@ public class AccountService implements UserDetailsService {
     private final AccountRepository accountRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final FileStorageService fileStorageService;
+    private final AccountDTOMapper accountDTOMapper;
 
     @Autowired
     public AccountService(AccountRepository accountRepository,
                           BCryptPasswordEncoder bCryptPasswordEncoder,
-                          FileStorageService fileStorageService) {
+                          FileStorageService fileStorageService, AccountDTOMapper accountDTOMapper) {
         this.accountRepository = accountRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.fileStorageService = fileStorageService;
+        this.accountDTOMapper = accountDTOMapper;
     }
 
     /*
@@ -96,7 +100,7 @@ public class AccountService implements UserDetailsService {
                     .sign(algorithm);
             RegistrationResponse registrationResponse = new RegistrationResponse(
                     accessToken,
-                    AccountDTOMapper.apply(account, accountRegistrationRequest.getImg() != null ? accountRegistrationRequest.getImg().getBytes() : null)
+                    accountDTOMapper.apply(account)
             );
             return new ResponseEntity<>(registrationResponse, HttpStatus.CREATED);
         }
@@ -147,17 +151,16 @@ public class AccountService implements UserDetailsService {
     }
 
     public boolean deleteAccount(String email, String password) throws Exception {
-        if (accountRepository.existsAccountByEmail(email)) {
-            Account p = accountRepository.findByEmail(email);
-            boolean arePasswordsMatched = bCryptPasswordEncoder.matches(password, p.getPassword());
-            if (arePasswordsMatched) {
-                accountRepository.delete(p);
-                return true;
-            } else {
-                throw new Exception("Wrong password! account did not remove");
-            }
+        if (!accountRepository.existsAccountByEmail(email)) {
+            throw new AccountNotFoundException("account not found with the provided email");
         }
-        return false;
+        Account p = accountRepository.findByEmail(email);
+        boolean arePasswordsMatched = bCryptPasswordEncoder.matches(password, p.getPassword());
+        if (!arePasswordsMatched) {
+            throw new Exception("Wrong password! account did not remove");
+        }
+        accountRepository.delete(p);
+        return true;
     }
 
     /* gives the specific account detail with request header authorization or (jwt token) */
@@ -171,38 +174,26 @@ public class AccountService implements UserDetailsService {
         return accountRepository
                 .findAll()
                 .stream()
-                .map(item -> AccountDTOMapper.apply(item,
-                        fileStorageService.getProfileImage(item.getId() + ""))).collect(Collectors.toList());
+                .map(accountDTOMapper)
+                .collect(Collectors.toList());
     }
 
     /*
      * find account by email and return its information by accountInfo dto
      * */
     public AccountDTO getAccount(String email) {
-        Account account = accountRepository.findByEmail(email);
-        if (account == null) {
-            return null;
+        if(accountRepository.existsAccountByEmail(email)){
+            throw new AccountNotFoundException("account not found with the provided email");
         }
-        byte[] profileImage = fileStorageService.getProfileImage(account.getId() + "");
-        return new AccountDTO(
-                account.getName(),
-                account.getLastName(),
-                account.getUserName(),
-                profileImage,
-                account.getEmail(),
-                account.getFriends().size(),
-                account.getGender()
-        );
+        Account account = accountRepository.findByEmail(email);
+        return accountDTOMapper.apply(account);
     }
 
     /* return account by userName */
-    public AccountDTO getAccountByUserName(String userName) {
+    public AccountDTO getAccountByUserName(String userName)  {
         if (userName == null || userName.isEmpty()) return null;
         Account account = accountRepository.findByUserName(userName);
-        if (account != null) {
-            return AccountDTOMapper.apply(account, fileStorageService.getProfileImage(account.getId() + ""));
-        }
-        return null;
+        return accountDTOMapper.apply(account);
     }
 
     /* return all account information by email of the account*/
@@ -256,8 +247,7 @@ public class AccountService implements UserDetailsService {
                 .findByUserName(userName)
                 .getFriends()
                 .stream()
-                .map(account -> AccountDTOMapper
-                        .apply(account, fileStorageService.getProfileImage(account.getId() + "") ))
+                .map(accountDTOMapper)
                 .collect(Collectors.toList());
     }
 }
