@@ -39,11 +39,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         CustomAuthenticationFilter customAuthenticationFilter =
                 new CustomAuthenticationFilter(accountService, authenticationManager());
-        customAuthenticationFilter.setFilterProcessesUrl("/api/login");
+        customAuthenticationFilter.setFilterProcessesUrl("/api/v1/login");
         http.csrf().disable();
         http.cors();
-        http.authorizeHttpRequests().antMatchers("api/*","**").permitAll();
-        http.authorizeHttpRequests().antMatchers("/api/login","/api/register").permitAll();
+        http.authorizeHttpRequests().antMatchers("api/v1/*","**").permitAll();
+        http.authorizeHttpRequests().antMatchers("api/v1/files/profile-picture/*").permitAll();
+        http.authorizeHttpRequests().antMatchers("/api/v1/login","/api/v1/register").permitAll();
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilter(customAuthenticationFilter);
     }
