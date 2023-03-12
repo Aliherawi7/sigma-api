@@ -1,32 +1,26 @@
 package com.herawi.sigma.services;
 
+import com.herawi.sigma.exceptions.ProfileImageNotFoundException;
 import com.herawi.sigma.properties.FileStorageProperties;
-import javafx.application.Application;
-import org.apache.coyote.http2.Http2Protocol;
-import org.apache.tomcat.util.net.openssl.ciphers.Protocol;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import sun.security.ssl.ProtocolVersion;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Service
 public class FileStorageService {
-    @Value("host.name")
-    private String hostName;
-
 
     private final Path fileStorageLocation;
 
@@ -46,8 +40,8 @@ public class FileStorageService {
     /*
     * store the file in the profile picture directory
     * */
-    public void storeFile(MultipartFile multipartFile, String userId) throws IOException {
-        if(multipartFile == null || userId == null) return;
+    public void storeFile(MultipartFile multipartFile, String username) throws IOException {
+        if(multipartFile == null || username == null) return;
         // Normalize file name
         String fileName = StringUtils.getFilename(multipartFile.getOriginalFilename());
 
@@ -57,7 +51,7 @@ public class FileStorageService {
             throw new RuntimeException("Sorry! File name which contains invalid path sequence " + fileName);
         }
         String extension = multipartFile.getOriginalFilename().split("\\.")[1];
-        Path targetLocation = this.fileStorageLocation.resolve(userId+"."+extension);
+        Path targetLocation = this.fileStorageLocation.resolve(username+"."+extension);
         Files.copy(multipartFile.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
     }
 
@@ -65,16 +59,16 @@ public class FileStorageService {
     * get the file by user id from the profile picture directory
     *
     * */
-    public byte[] getProfileImage(String userId) {
-        File[] file = new File(fileStorageLocation.toUri()).listFiles();
-        assert file != null;
-        File image = Stream.of(file)
-                .filter(item -> item.getName().split("\\.")[0].equalsIgnoreCase(userId))
+    public byte[] getProfileImage(String username) throws ProfileImageNotFoundException {
+        File image = Stream.of(Objects.requireNonNull(new File(fileStorageLocation.toUri()).listFiles()))
+                .filter(item -> item.getName().split("\\.")[0].equalsIgnoreCase(username))
                 .findFirst().orElse(null);
 
-        assert image != null;
+        if(image == null){
+            throw new ProfileImageNotFoundException("file not found with provided username");
+        }
         byte[] imageBytes = new byte[(int)image.length()];
-        FileInputStream inputStream = null;
+        FileInputStream inputStream;
         try {
             inputStream = new FileInputStream(image);
             inputStream.read(imageBytes);
