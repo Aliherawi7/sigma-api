@@ -50,7 +50,8 @@ public class AccountService implements UserDetailsService {
      * */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Account account = accountRepository.findByEmail(email);
+
+        Account account = accountRepository.findByEmail(email.toLowerCase().trim());
         if (account == null) {
             throw new UsernameNotFoundException("account not found");
         }
@@ -90,7 +91,7 @@ public class AccountService implements UserDetailsService {
             account.setPassword(bCryptPasswordEncoder.encode(accountRegistrationRequest.getPassword()));
             account = accountRepository.save(account);
             if (accountRegistrationRequest.getImg() != null && !accountRegistrationRequest.getImg().isEmpty()) {
-                fileStorageService.storeFile(accountRegistrationRequest.getImg(), account.getId() + "");
+                fileStorageService.storeFile(accountRegistrationRequest.getImg(), account.getUserName());
             }
             Algorithm algorithm = Algorithm.HMAC256("Bearer".getBytes());
             String accessToken = JWT.create()
@@ -182,7 +183,7 @@ public class AccountService implements UserDetailsService {
      * find account by email and return its information by accountInfo dto
      * */
     public AccountDTO getAccount(String email) {
-        if(accountRepository.existsAccountByEmail(email)){
+        if(!accountRepository.existsAccountByEmail(email)){
             throw new AccountNotFoundException("account not found with the provided email");
         }
         Account account = accountRepository.findByEmail(email);
