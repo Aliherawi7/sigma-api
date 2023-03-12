@@ -5,8 +5,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 //@ResponseStatus(code = HttpStatus.NOT_FOUND, value = HttpStatus.NOT_FOUND)
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class FileNotFoundException extends RuntimeException{
-    public FileNotFoundException(String message) {
+public class ProfileImageNotFoundException extends RuntimeException{
+    public ProfileImageNotFoundException(String message) {
         super(message);
     }
+
 }
