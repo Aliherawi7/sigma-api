@@ -6,8 +6,8 @@
       "description": "Description for file.upload-dir."
     },
     {
-      "name": "file.upload-dir",
+      "name": "file.staticFiles",
       "type": "java.lang.String",
-      "description": "Description for file.upload-dir."
+      "description": "Description for file.staticFiles."
     }
   ] }
