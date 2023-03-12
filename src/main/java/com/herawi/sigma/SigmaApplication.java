@@ -35,7 +35,6 @@ public class SigmaApplication {
 			ArrayList<AccountRegistrationRequest> accounts = new ArrayList<>();
 			try {
 				URL jsonUrl = Thread.currentThread().getContextClassLoader().getResource("static\\accounts.json");
-				System.out.println(jsonUrl);
 				AccountRegistrationRequest[] array = objectMapper.readValue(jsonUrl, AccountRegistrationRequest[].class);
 				accounts.addAll(Arrays.asList(array));
 				accounts.forEach(item -> {
