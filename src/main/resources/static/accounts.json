@@ -68,7 +68,7 @@
     "password":"123456",
     "dob": "2000-02-03",
     "email": "Amanda_nash@gmail.com",
-    "gender": "Male",
+    "gender": "Female",
     "img": null
   },
   {
@@ -95,7 +95,7 @@
     "password":"123456",
     "dob": "2000-02-03",
     "email": "RockyRock@gmail.com",
-    "gender": "female",
+    "gender": "Male",
     "img": null
   },
   {
@@ -122,7 +122,7 @@
     "password":"123456",
     "dob": "2000-02-03",
     "email": "FarhanAbdul@gmail.com",
-    "gender": "female",
+    "gender": "male",
     "img": null
   },
   {
@@ -194,7 +194,7 @@
     "password":"123456",
     "dob": "2000-02-03",
     "email": "Torreswest@gmail.com",
-    "gender": "male",
+    "gender": "female",
     "img": null
   },
   {
@@ -202,8 +202,8 @@
     "lastName": "wellness",
     "password":"123456",
     "dob": "2000-02-03",
-    "email": "Torreswest@gmail.com",
-    "gender": "male",
+    "email": "Jameswellness@gmail.com",
+    "gender": "female",
     "img": null
   },
   {
@@ -234,30 +234,57 @@
     "img": null
   },
   {
-    "name": "Abbas",
+    "name": "Erina",
     "lastName": "Bahman",
     "password":"123456",
     "dob": "2000-02-03",
-    "email": "AbbasBahman@gmail.com",
-    "gender": "male",
+    "email": "ErinaBahman@gmail.com",
+    "gender": "female",
     "img": null
   },
   {
-    "name": "Jack",
+    "name": "rosy",
     "lastName": "Richard",
     "password":"123456",
     "dob": "2000-02-03",
-    "email": "JackRichard@gmail.com",
-    "gender": "male",
+    "email": "rosyRichard@gmail.com",
+    "gender": "female",
     "img": null
   },
   {
-    "name": "Tomas",
+    "name": "Anna",
     "lastName": "Richard",
     "password":"123456",
     "dob": "2000-02-03",
-    "email": "TomasRichard@gmail.com",
-    "gender": "male",
+    "email": "AnnaRichard@gmail.com",
+    "gender": "female",
+    "img": null
+  },
+  {
+    "name": "Barbara",
+    "lastName": "harris",
+    "password":"123456",
+    "dob": "2000-02-03",
+    "email": "Barbaraharris@gmail.com",
+    "gender": "female",
+    "img": null
+  },
+  {
+  "name": "Laura",
+  "lastName": "Mackay",
+  "password":"123456",
+  "dob": "2000-02-03",
+  "email": "LauraMackay@gmail.com",
+  "gender": "female",
+  "img": null
+  },
+  {
+    "name": "Sofia",
+    "lastName": "Mitra",
+    "password":"123456",
+    "dob": "2000-02-03",
+    "email": "SofiaMitra@gmail.com",
+    "gender": "female",
     "img": null
   }
 ]
