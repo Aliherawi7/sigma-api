@@ -15,7 +15,7 @@ public class AccountDTOMapper implements Function<Account, AccountDTO> {
                 account.getName(),
                 account.getLastName(),
                 account.getUserName(),
-                APIEndpoints.PROFILE_PICTURE.getValue()+account.getId(),
+                APIEndpoints.PROFILE_PICTURE.getValue()+account.getUserName(),
                 account.getEmail(),
                 account.getFriends().size(),
                 account.getGender()
