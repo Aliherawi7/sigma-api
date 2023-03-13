@@ -194,16 +194,20 @@ public class AccountService implements UserDetailsService {
     public AccountDTO getAccountByUserName(String userName)  {
         if (userName == null || userName.isEmpty()) return null;
         Account account = accountRepository.findByUserName(userName);
+        if(account == null)
+            throw new AccountNotFoundException("account not found with the provided username");
         return accountDTOMapper.apply(account);
     }
 
     /* return all account information by email of the account*/
     public Account getAccountWithDetails(String email) {
-        if (email != null) {
-            email = email.toLowerCase().trim();
-            return accountRepository.findByEmail(email);
-        }
-        return null;
+        email = email.toLowerCase().trim();
+        Account account = accountRepository.findByEmail(email);
+        if (account == null)
+            throw new AccountNotFoundException("account not found with the provided username");
+
+        return account;
+
     }
 
 
