@@ -35,19 +35,13 @@ public class AccountController {
     @GetMapping("userName/{userName}")
     public ResponseEntity<?> getAccountService(@PathVariable String userName) {
         AccountDTO accountDTO = accountService.getAccountByUserName(userName);
-        if(accountDTO != null){
-            return ResponseEntity.ok(accountDTO);
-        }
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(accountDTO);
     }
 
     @GetMapping("email/{email}")
     public ResponseEntity<?> getUsers(@PathVariable String email){
         AccountDTO accountInfo = accountService.getAccount(email);
-        if(accountInfo != null){
-            return ResponseEntity.ok().body(accountInfo);
-        }
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().body(accountInfo);
     }
     @GetMapping("/all")
     public ResponseEntity<?> getAll(){
