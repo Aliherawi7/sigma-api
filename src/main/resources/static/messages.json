@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "text": "Hello dear",
+    "senderUsername": "rosesimon",
+    "receiverUsername": "RobertFord",
+    "seen": true
+  },
+  {
+    "id": 2,
+    "text": "how are you",
+    "senderUsername": "rosesimon",
+    "receiverUsername": "RobertFord",
+    "seen": true
+  },
+  {
+  "id": 3,
+  "text": "Hello baby",
+  "senderUsername": "RobertFord",
+  "receiverUsername": "rosesimon",
+  "seen": true
+  },
+  {
+    "id": 4,
+    "text": "I'm fine, how about you?",
+    "senderUsername": "RobertFord",
+    "receiverUsername": "rosesimon",
+    "seen": true
+  },
+  {
+    "id": 5,
+    "text": "Is Everything ok?",
+    "senderUsername": "RobertFord",
+    "receiverUsername": "rosesimon",
+    "seen": true
+  }
+]
