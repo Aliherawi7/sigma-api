@@ -7,6 +7,7 @@ import com.herawi.sigma.dto.AccountDTO;
 import com.herawi.sigma.dto.AccountRegistrationRequest;
 import com.herawi.sigma.dto.RegistrationResponse;
 import com.herawi.sigma.exceptions.AccountNotFoundException;
+import com.herawi.sigma.exceptions.CredentialException;
 import com.herawi.sigma.filters.AccountRegistrationRequestFilter;
 import com.herawi.sigma.filters.FilterResponse;
 import com.herawi.sigma.models.Account;
@@ -115,10 +116,11 @@ public class AccountService implements UserDetailsService {
     public boolean updateAccount(HttpServletRequest request, AccountRegistrationRequest accountRegistrationRequest) throws Exception {
         String accountEmail = JWTTools.getUserEmailByJWT(request);
         if (accountRegistrationRequest != null) {
-            if (!accountRepository.existsAccountByEmail(accountEmail)) {
-                throw new Exception("This user is not found in database");
-            }
             Account account = accountRepository.findByEmail(accountRegistrationRequest.getEmail());
+            if (account == null) {
+                throw new AccountNotFoundException("This user is not found in database");
+            }
+
             if (accountRegistrationRequest.getDob() != null) {
                 if (AccountRegistrationRequestFilter.filterDOB(accountRegistrationRequest.getDob())) {
                     account.setDob(accountRegistrationRequest.getDob());
@@ -158,7 +160,7 @@ public class AccountService implements UserDetailsService {
         Account p = accountRepository.findByEmail(email);
         boolean arePasswordsMatched = bCryptPasswordEncoder.matches(password, p.getPassword());
         if (!arePasswordsMatched) {
-            throw new Exception("Wrong password! account did not remove");
+            throw new CredentialException("Wrong password! account did not remove");
         }
         accountRepository.delete(p);
         return true;
@@ -183,10 +185,10 @@ public class AccountService implements UserDetailsService {
      * find account by email and return its information by accountInfo dto
      * */
     public AccountDTO getAccount(String email) {
-        if(!accountRepository.existsAccountByEmail(email)){
+        Account account = accountRepository.findByEmail(email);
+        if(account == null){
             throw new AccountNotFoundException("account not found with the provided email");
         }
-        Account account = accountRepository.findByEmail(email);
         return accountDTOMapper.apply(account);
     }
 
@@ -198,6 +200,12 @@ public class AccountService implements UserDetailsService {
             throw new AccountNotFoundException("account not found with the provided username");
         return accountDTOMapper.apply(account);
     }
+
+    /* check if there is an account with provided username */
+    public boolean isAccountExistByUsername(String username){
+        return accountRepository.existsAccountByUserName(username.trim().toLowerCase());
+    }
+
 
     /* return all account information by email of the account*/
     public Account getAccountWithDetails(String email) {
@@ -224,7 +232,7 @@ public class AccountService implements UserDetailsService {
         Account account = accountRepository.findByEmail(email);
         Account targetAccount = accountRepository.findByUserName(userName);
         if (account == null || targetAccount == null)
-            return;
+            throw new AccountNotFoundException("invalid username! account not found");
         account.addAccountToFriends(targetAccount);
         targetAccount.getFriends().add(account);
 
