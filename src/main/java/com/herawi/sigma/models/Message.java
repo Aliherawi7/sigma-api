@@ -19,12 +19,12 @@ public class Message  implements Comparable<Message>{
         dateTime = LocalDateTime.now();
     }
 
-    public Message(long id, String text, String senderUsername, String receiverUsername, LocalDateTime dateTime, boolean seen) {
+    public Message(long id, String text, String senderUsername, String receiverUsername, boolean seen) {
         this.id = id;
         this.text = text;
         this.senderUsername = senderUsername;
         this.receiverUsername = receiverUsername;
-        this.dateTime = dateTime;
+        this.dateTime = LocalDateTime.now();
         this.seen = seen;
     }
 
