@@ -16,6 +16,8 @@ import com.herawi.sigma.repositories.AccountRepository;
 import com.herawi.sigma.utils.JWTTools;
 import com.herawi.sigma.utils.PaginationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -49,9 +51,6 @@ public class AccountService implements UserDetailsService {
         this.fileStorageService = fileStorageService;
         this.accountDTOMapper = accountDTOMapper;
     }
-
-    @Autowired
-
 
     /*
      * this method implemented for for UserDetailsService for authentication process
@@ -190,6 +189,14 @@ public class AccountService implements UserDetailsService {
                 .collect(Collectors.toList());
     }
 
+    /* gives all the accounts with pagination */
+
+    public Collection<AccountDTO> getAllAccountWithPagination(int offset, int pageSize){
+        Page<Account> accountS = accountRepository.findAll(PageRequest.of(offset-1, pageSize));
+        return accountS.stream().map(accountDTOMapper).collect(Collectors.toList());
+
+    }
+
     /*
      * find account by email and return its information by accountInfo dto
      * */
@@ -249,7 +256,6 @@ public class AccountService implements UserDetailsService {
             throw new AccountNotFoundException("invalid username! account not found");
         account.addAccountToFriends(targetAccount);
         targetAccount.getFriends().add(account);
-
         accountRepository.save(account);
         accountRepository.save(targetAccount);
     }
@@ -287,6 +293,5 @@ public class AccountService implements UserDetailsService {
         PaginationUtils.Paginate paginate = PaginationUtils.getStartAndEndPoint(friends.size(), offset, pageSize);
         return friends.subList(paginate.start, paginate.end);
     }
-
 
 }
