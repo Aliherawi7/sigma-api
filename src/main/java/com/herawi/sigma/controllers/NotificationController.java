@@ -23,7 +23,6 @@ public class NotificationController {
     }
     @GetMapping
     public ResponseEntity<Collection<Notification>> getAllNotification(HttpServletRequest request){
-        System.out.println("in get all ");
         Collection<Notification> notifications = notificationService.getAllNotifications(request);
 
         if(notifications.size() > 0){
