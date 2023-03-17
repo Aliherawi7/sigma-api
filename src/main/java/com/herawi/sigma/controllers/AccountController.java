@@ -46,7 +46,6 @@ public class AccountController {
     }
     @GetMapping("/pagination/{offset}/{pageSize}")
     public ResponseEntity<?> getAll(@PathVariable int offset, @PathVariable int pageSize){
-        System.out.println(offset + " : " + pageSize);
         return ResponseEntity.ok().body(accountService.getAllAccountWithPagination(offset, pageSize));
     }
 
