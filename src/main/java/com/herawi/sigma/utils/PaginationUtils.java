@@ -4,9 +4,10 @@ public class PaginationUtils {
 
     public static Paginate getStartAndEndPoint(int listSize, int offset, int pageSize){
         int start, end;
-        end = (offset * pageSize) >= listSize ? (offset * pageSize) : listSize - 1;
-        start = end - pageSize;
+        end = (offset * pageSize) < listSize ? (offset * pageSize) : listSize;
+        start = (end - pageSize) < 0 ? 0 : end - pageSize;
         Paginate paginate = new Paginate(start, end);
+
         return paginate;
     }
 
