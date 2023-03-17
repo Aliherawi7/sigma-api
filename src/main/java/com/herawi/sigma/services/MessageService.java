@@ -1,7 +1,6 @@
 package com.herawi.sigma.services;
 
 
-import antlr.debug.MessageAdapter;
 import com.herawi.sigma.dto.MessageRequestDO;
 import com.herawi.sigma.exceptions.AccountNotFoundException;
 import com.herawi.sigma.models.Account;
@@ -60,7 +59,6 @@ public class MessageService {
         if(account == null){
             throw new AccountNotFoundException("account not found with provided email");
         }
-        messageRepository.findAll().forEach(item -> System.out.println(item.getReceiverUsername()));
         Collection<Message> allMessagesFromSenderToReceiver =
                 messageRepository.findAllBySenderUsernameAndReceiverUsername(account.getUserName(), receiverUsername);
         Collection<Message> allMessagesFromReceiverToSender =
