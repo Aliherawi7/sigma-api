@@ -44,9 +44,10 @@ public class AccountController {
         AccountDTO accountInfo = accountService.getAccount(email);
         return ResponseEntity.ok().body(accountInfo);
     }
-    @GetMapping("/all")
-    public ResponseEntity<?> getAll(){
-        return ResponseEntity.ok().body(accountService.getAllAccount());
+    @GetMapping("/pagination/{offset}/{pageSize}")
+    public ResponseEntity<?> getAll(@PathVariable int offset, @PathVariable int pageSize){
+        System.out.println(offset + " : " + pageSize);
+        return ResponseEntity.ok().body(accountService.getAllAccountWithPagination(offset, pageSize));
     }
 
     @GetMapping("{userName}/friends/pagination/{offset}/{pageSize}")
