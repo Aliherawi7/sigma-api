@@ -1,6 +1,7 @@
 package com.herawi.sigma.controllers;
 
 import com.herawi.sigma.dto.MessageRequestDO;
+import com.herawi.sigma.models.Account;
 import com.herawi.sigma.models.Message;
 import com.herawi.sigma.services.MessageService;
 import com.herawi.sigma.utils.JWTTools;
@@ -33,9 +34,8 @@ public class MessageController {
     @GetMapping("/{userName}")
     public ResponseEntity<?> getAllMessagesByUsername(HttpServletRequest request,
                                                       @PathVariable("userName") String userName){
-        String currentUser = JWTTools.getUsernameByJWT(request);
         Collection<Message> messages = messageService
-                .getAllMessageBySenderUsernameAndReceiverUsername(userName, currentUser);
+                .getAllMessageBySenderUsernameAndReceiverUsername(request, userName);
         return ResponseEntity.ok(
         messages.stream().sorted());
     }
@@ -45,6 +45,7 @@ public class MessageController {
         return new ResponseEntity<>(
                 messageService.addMessage(request, messageRequestDO),
                 HttpStatus.CREATED);
+
     }
 
 

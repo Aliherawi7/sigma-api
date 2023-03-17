@@ -8,5 +8,4 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     Collection<Message> findAllBySenderUsername(String senderUsername);
     Collection<Message> findAllByReceiverUsername(String receiverUsername);
     Collection<Message> findAllBySenderUsernameAndReceiverUsername(String senderUsername, String receiverUsername);
-
 }

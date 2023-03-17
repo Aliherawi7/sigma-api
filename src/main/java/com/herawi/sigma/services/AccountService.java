@@ -2,7 +2,6 @@ package com.herawi.sigma.services;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.herawi.sigma.constants.APIEndpoints;
 import com.herawi.sigma.dto.AccountDTO;
 import com.herawi.sigma.dto.AccountRegistrationRequest;
 import com.herawi.sigma.dto.RegistrationResponse;
@@ -12,8 +11,10 @@ import com.herawi.sigma.filters.AccountRegistrationRequestFilter;
 import com.herawi.sigma.filters.FilterResponse;
 import com.herawi.sigma.models.Account;
 import com.herawi.sigma.models.Role;
+
 import com.herawi.sigma.repositories.AccountRepository;
 import com.herawi.sigma.utils.JWTTools;
+import com.herawi.sigma.utils.PaginationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,15 +37,21 @@ public class AccountService implements UserDetailsService {
     private final FileStorageService fileStorageService;
     private final AccountDTOMapper accountDTOMapper;
 
-    @Autowired
-    public AccountService(AccountRepository accountRepository,
-                          BCryptPasswordEncoder bCryptPasswordEncoder,
-                          FileStorageService fileStorageService, AccountDTOMapper accountDTOMapper) {
+
+    public AccountService(
+            AccountRepository accountRepository,
+            BCryptPasswordEncoder bCryptPasswordEncoder,
+            FileStorageService fileStorageService,
+            AccountDTOMapper accountDTOMapper
+            ) {
         this.accountRepository = accountRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.fileStorageService = fileStorageService;
         this.accountDTOMapper = accountDTOMapper;
     }
+
+    @Autowired
+
 
     /*
      * this method implemented for for UserDetailsService for authentication process
@@ -61,6 +69,7 @@ public class AccountService implements UserDetailsService {
                 .forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
         return new org.springframework.security.core.userdetails.User(account.getEmail(), account.getPassword(), authorities);
     }
+
 
     /*
      * this method add the new account in the database with provided information
@@ -218,6 +227,11 @@ public class AccountService implements UserDetailsService {
 
     }
 
+    /* get profile picture of the provided account*/
+    public String getProfilePictureUrl(String userName){
+        return getAccountByUserName(userName).getProfilePictureUrl();
+    }
+
 
     /* check whether there is an account with the provided email address*/
     public boolean isAccountExistByEmail(String email) {
@@ -255,7 +269,7 @@ public class AccountService implements UserDetailsService {
     * get all friends of the target account
     * */
 
-    public Collection<AccountDTO> getAllFriends(String userName){
+    public List<AccountDTO> getAllFriends(String userName){
         return accountRepository
                 .findByUserName(userName)
                 .getFriends()
@@ -263,4 +277,16 @@ public class AccountService implements UserDetailsService {
                 .map(accountDTOMapper)
                 .collect(Collectors.toList());
     }
+
+    /*
+    * get all friends with pagination
+    * */
+
+    public List<AccountDTO> getAllFriendsWithPagination(String username, int offset, int pageSize){
+        List<AccountDTO> friends = getAllFriends(username);
+        PaginationUtils.Paginate paginate = PaginationUtils.getStartAndEndPoint(friends.size(), offset, pageSize);
+        return friends.subList(paginate.start, paginate.end);
+    }
+
+
 }

@@ -14,6 +14,8 @@ public class Message  implements Comparable<Message>{
     private String receiverUsername;
     private LocalDateTime dateTime;
     private boolean seen;
+    private String senderProfileImageUrl;
+    private String receiverProfileImageUrl;
 
     public Message() {
         dateTime = LocalDateTime.now();
@@ -22,8 +24,8 @@ public class Message  implements Comparable<Message>{
     public Message(long id, String text, String senderUsername, String receiverUsername, boolean seen) {
         this.id = id;
         this.text = text;
-        this.senderUsername = senderUsername;
-        this.receiverUsername = receiverUsername;
+        setSenderUsername(senderUsername);
+        setReceiverUsername(receiverUsername);
         this.dateTime = LocalDateTime.now();
         this.seen = seen;
     }
@@ -49,7 +51,7 @@ public class Message  implements Comparable<Message>{
     }
 
     public void setSenderUsername(String senderUsername) {
-        this.senderUsername = senderUsername;
+        this.senderUsername = senderUsername.trim().toLowerCase();
     }
 
     public String getReceiverUsername() {
@@ -57,7 +59,7 @@ public class Message  implements Comparable<Message>{
     }
 
     public void setReceiverUsername(String receiverUsername) {
-        this.receiverUsername = receiverUsername;
+        this.receiverUsername = receiverUsername.trim().toLowerCase();
     }
 
     public LocalDateTime getDateTime() {
@@ -74,6 +76,22 @@ public class Message  implements Comparable<Message>{
 
     public void setSeen(boolean seen) {
         this.seen = seen;
+    }
+
+    public String getSenderProfileImageUrl() {
+        return senderProfileImageUrl;
+    }
+
+    public void setSenderProfileImageUrl(String senderProfileImageUrl) {
+        this.senderProfileImageUrl = senderProfileImageUrl;
+    }
+
+    public String getReceiverProfileImageUrl() {
+        return receiverProfileImageUrl;
+    }
+
+    public void setReceiverProfileImageUrl(String receiverProfileImageUrl) {
+        this.receiverProfileImageUrl = receiverProfileImageUrl;
     }
 
     @Override

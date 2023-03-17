@@ -1,9 +1,11 @@
 package com.herawi.sigma.services;
 
 import com.herawi.sigma.constants.Gender;
+import com.herawi.sigma.dto.AccountDTO;
 import com.herawi.sigma.dto.AccountRegistrationRequest;
 import com.herawi.sigma.models.Account;
 import com.herawi.sigma.repositories.AccountRepository;
+import com.herawi.sigma.utils.PaginationUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -47,7 +49,8 @@ class AccountServiceTest {
                 accountRepository,
                 bCryptPasswordEncoder,
                 fileStorageService,
-                accountDTOMapper);
+                accountDTOMapper
+                );
         request = new AccountRegistrationRequest(
                 "ali",
                 "herawi",

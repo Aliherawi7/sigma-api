@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.nio.file.Path;
 
 @RestController
 @RequestMapping( value = "api/v1/accounts", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -48,9 +49,12 @@ public class AccountController {
         return ResponseEntity.ok().body(accountService.getAllAccount());
     }
 
-    @GetMapping("{userName}/friends")
-    public ResponseEntity<?> getAllFriends(@PathVariable String userName){
-        return ResponseEntity.ok().body(accountService.getAllFriends(userName));
+    @GetMapping("{userName}/friends/pagination/{offset}/{pageSize}")
+    public ResponseEntity<?> getAllFriends(
+            @PathVariable String userName,
+            @PathVariable int offset,
+            @PathVariable int pageSize){
+        return ResponseEntity.ok().body(accountService.getAllFriendsWithPagination(userName, offset, pageSize));
     }
 
 }

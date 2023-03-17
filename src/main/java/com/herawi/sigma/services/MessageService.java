@@ -19,10 +19,12 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final AccountService accountService;
+    private final FileStorageService fileStorageService;
 
-    public MessageService(MessageRepository messageRepository, AccountService accountService) {
+    public MessageService(MessageRepository messageRepository, AccountService accountService, FileStorageService fileStorageService) {
         this.messageRepository = messageRepository;
         this.accountService = accountService;
+        this.fileStorageService = fileStorageService;
     }
 
     public Message addMessage(HttpServletRequest request, MessageRequestDO messageRequestDO){
@@ -35,6 +37,8 @@ public class MessageService {
         message.setSenderUsername(account.getUserName());
         message.setReceiverUsername(messageRequestDO.getUsername());
         message.setText(messageRequestDO.getMessage());
+        message.setSenderProfileImageUrl(accountService.getProfilePictureUrl(account.getUserName()));
+        message.setReceiverProfileImageUrl(messageRequestDO.getUsername());
         return messageRepository.save(message);
     }
 
@@ -43,11 +47,26 @@ public class MessageService {
            !accountService.isAccountExistByUsername(message.getReceiverUsername())){
             throw new AccountNotFoundException("account not found with provided username");
         }
+        message.setSenderProfileImageUrl(accountService.getProfilePictureUrl(message.getSenderUsername()));
+        message.setReceiverProfileImageUrl(accountService.getProfilePictureUrl(message.getReceiverUsername()));
         return messageRepository.save(message);
     }
 
-    public Collection<Message> getAllMessageBySenderUsernameAndReceiverUsername(String senderUsername, String receiverUsername){
-        return messageRepository.findAllBySenderUsernameAndReceiverUsername(senderUsername, receiverUsername);
+    public Collection<Message> getAllMessageBySenderUsernameAndReceiverUsername(
+            HttpServletRequest request,
+            String receiverUsername){
+        String email = JWTTools.getUserEmailByJWT(request);
+        Account account = accountService.getAccountWithDetails(email);
+        if(account == null){
+            throw new AccountNotFoundException("account not found with provided email");
+        }
+        messageRepository.findAll().forEach(item -> System.out.println(item.getReceiverUsername()));
+        Collection<Message> allMessagesFromSenderToReceiver =
+                messageRepository.findAllBySenderUsernameAndReceiverUsername(account.getUserName(), receiverUsername);
+        Collection<Message> allMessagesFromReceiverToSender =
+                messageRepository.findAllBySenderUsernameAndReceiverUsername(receiverUsername, account.getUserName());
+        allMessagesFromReceiverToSender.addAll(allMessagesFromSenderToReceiver);
+        return allMessagesFromReceiverToSender.stream().sorted().collect(Collectors.toList());
     }
 
     public Collection<Message> getAllBySenderUsername(String senderUsername){
