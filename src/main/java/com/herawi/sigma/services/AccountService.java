@@ -11,11 +11,9 @@ import com.herawi.sigma.filters.AccountRegistrationRequestFilter;
 import com.herawi.sigma.filters.FilterResponse;
 import com.herawi.sigma.models.Account;
 import com.herawi.sigma.models.Role;
-
 import com.herawi.sigma.repositories.AccountRepository;
 import com.herawi.sigma.utils.JWTTools;
 import com.herawi.sigma.utils.PaginationUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -181,7 +179,7 @@ public class AccountService implements UserDetailsService {
     }
 
     /* give all the accounts which are saved in the database*/
-    public Collection<AccountDTO> getAllAccount() {
+    public List<AccountDTO> getAllAccount() {
         return accountRepository
                 .findAll()
                 .stream()
@@ -191,7 +189,7 @@ public class AccountService implements UserDetailsService {
 
     /* gives all the accounts with pagination */
 
-    public Collection<AccountDTO> getAllAccountWithPagination(int offset, int pageSize){
+    public List<AccountDTO> getAllAccountWithPagination(int offset, int pageSize){
         Page<Account> accountS = accountRepository.findAll(PageRequest.of(offset-1, pageSize));
         return accountS.stream().map(accountDTOMapper).collect(Collectors.toList());
 
@@ -260,6 +258,24 @@ public class AccountService implements UserDetailsService {
         accountRepository.save(targetAccount);
     }
 
+    /*
+    * add account as friend with ids this is for test purpose
+    *  */
+
+    public void addAsFriendById(String currentUsername, String tobeFriendUsername){
+        Account currentAccount = accountRepository.findByUserName(currentUsername.toLowerCase());
+        Account tobeFriendAccount = accountRepository.findByUserName(tobeFriendUsername);
+        if(currentAccount == null || tobeFriendAccount == null){
+            throw new AccountNotFoundException("account not found with provided id");
+        }
+        if(!currentUsername.equalsIgnoreCase(tobeFriendUsername)){
+            currentAccount.addAccountToFriends(tobeFriendAccount);
+            tobeFriendAccount.addAccountToFriends(currentAccount);
+            accountRepository.save(tobeFriendAccount);
+            accountRepository.save(currentAccount);
+        }
+
+    }
     /*
      * check if someone is friend with target account
      * */
