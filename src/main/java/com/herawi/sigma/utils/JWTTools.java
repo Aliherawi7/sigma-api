@@ -10,16 +10,23 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 
-@Component
+@Service
 public class JWTTools {
-    @Autowired
-    private static AccountService accountService;
+
+    private final AccountService accountService;
+
+    public JWTTools(AccountService accountService) {
+        this.accountService = accountService;
+    }
 
     public static boolean testJWTOfUser(HttpServletRequest request, String userEmail){
         String authorizationHeader = request.getHeader("Authorization");
@@ -64,9 +71,17 @@ public class JWTTools {
         }
     }
 
-    public static String getUsernameByJWT(HttpServletRequest request){
+    public String getUsernameByJWT(HttpServletRequest request){
         String email = getUserEmailByJWT(request);
         return accountService.getAccountWithDetails(email).getUserName();
+    }
+
+    public static String createToken(String email){
+        Algorithm algorithm = Algorithm.HMAC256("Bearer");
+        String token = JWT.create().withSubject(email).withExpiresAt(new Date(System.currentTimeMillis()+(60*60*24*10*1000)))
+                .sign(algorithm);
+
+        return token;
     }
 
 }
