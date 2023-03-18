@@ -14,6 +14,9 @@ import com.herawi.sigma.models.Role;
 import com.herawi.sigma.repositories.AccountRepository;
 import com.herawi.sigma.utils.JWTTools;
 import com.herawi.sigma.utils.PaginationUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -36,7 +39,7 @@ public class AccountService implements UserDetailsService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final FileStorageService fileStorageService;
     private final AccountDTOMapper accountDTOMapper;
-
+    private final static Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
 
     public AccountService(
             AccountRepository accountRepository,
@@ -96,7 +99,7 @@ public class AccountService implements UserDetailsService {
 
             // encode password before saving in database
             account.setPassword(bCryptPasswordEncoder.encode(accountRegistrationRequest.getPassword()));
-            account = accountRepository.save(account);
+            accountRepository.save(account);
             if (accountRegistrationRequest.getImg() != null && !accountRegistrationRequest.getImg().isEmpty()) {
                 fileStorageService.storeFile(accountRegistrationRequest.getImg(), account.getUserName());
             }
@@ -119,10 +122,10 @@ public class AccountService implements UserDetailsService {
      * update the current logged in account with the provided information
      * this method should return the account information with the updated information
      */
-    public boolean updateAccount(HttpServletRequest request, AccountRegistrationRequest accountRegistrationRequest) throws Exception {
+    public boolean updateAccount(HttpServletRequest request, AccountRegistrationRequest accountRegistrationRequest) {
         String accountEmail = JWTTools.getUserEmailByJWT(request);
         if (accountRegistrationRequest != null) {
-            Account account = accountRepository.findByEmail(accountRegistrationRequest.getEmail());
+            Account account = accountRepository.findByEmail(accountEmail);
             if (account == null) {
                 throw new AccountNotFoundException("This user is not found in database");
             }
@@ -180,6 +183,7 @@ public class AccountService implements UserDetailsService {
 
     /* give all the accounts which are saved in the database*/
     public List<AccountDTO> getAllAccount() {
+        LOGGER.info("something went wrong");
         return accountRepository
                 .findAll()
                 .stream()
@@ -208,10 +212,10 @@ public class AccountService implements UserDetailsService {
 
     /* return account by userName */
     public AccountDTO getAccountByUserName(String userName)  {
-        if (userName == null || userName.isEmpty()) return null;
         Account account = accountRepository.findByUserName(userName);
-        if(account == null)
+        if(account == null){
             throw new AccountNotFoundException("account not found with the provided username");
+        }
         return accountDTOMapper.apply(account);
     }
 
@@ -308,6 +312,19 @@ public class AccountService implements UserDetailsService {
         List<AccountDTO> friends = getAllFriends(username);
         PaginationUtils.Paginate paginate = PaginationUtils.getStartAndEndPoint(friends.size(), offset, pageSize);
         return friends.subList(paginate.start, paginate.end);
+    }
+
+    /* simple  search accounts by name and last name */
+    public List<AccountDTO> getAccountDOTsByName(String keyword, int offset, int pageSize){
+        String[] keys = keyword.split(" ");
+        String firstName = keys[0];
+        String lastName = keys.length > 1 ? keys[1] : "";
+        List<AccountDTO> accountDTOList = accountRepository.findAllByNameOrLastName(firstName, lastName)
+                .stream()
+                .map(accountDTOMapper)
+                .collect(Collectors.toList());
+        PaginationUtils.Paginate paginate = PaginationUtils.getStartAndEndPoint(accountDTOList.size(), offset, pageSize);
+        return accountDTOList.subList(paginate.start, paginate.end);
     }
 
 }
