@@ -81,4 +81,17 @@ public class AccountDTO {
     public void setGender(Gender gender) {
         this.gender = gender;
     }
+
+    @Override
+    public String toString() {
+        return "AccountDTO{" +
+                "name='" + name + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", userName='" + userName + '\'' +
+                ", email='" + email + '\'' +
+                ", friends=" + friends +
+                ", gender=" + gender +
+                ", profilePictureUrl='" + profilePictureUrl + '\'' +
+                '}';
+    }
 }
