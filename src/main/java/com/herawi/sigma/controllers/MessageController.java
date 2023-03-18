@@ -1,7 +1,6 @@
 package com.herawi.sigma.controllers;
 
 import com.herawi.sigma.dto.MessageRequestDO;
-import com.herawi.sigma.models.Account;
 import com.herawi.sigma.models.Message;
 import com.herawi.sigma.services.MessageService;
 import com.herawi.sigma.utils.JWTTools;
@@ -18,15 +17,17 @@ import java.util.Collection;
 public class MessageController {
 
     private final MessageService messageService;
+    private final JWTTools jwtTools;
 
-    @Autowired
-    public MessageController(MessageService messageService) {
+    public MessageController(MessageService messageService, JWTTools jwtTools) {
         this.messageService = messageService;
+        this.jwtTools = jwtTools;
     }
+
 
     @GetMapping
     public ResponseEntity<?> getAllMessages(HttpServletRequest request){
-        String userName = JWTTools.getUsernameByJWT(request);
+        String userName = jwtTools.getUsernameByJWT(request);
         Collection<Message> messages = messageService.getAllByReceiverUsername(userName);
         return ResponseEntity.ok(messages);
     }
