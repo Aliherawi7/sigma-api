@@ -26,28 +26,10 @@ public class FriendRequestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> sendFriendRequest(HttpServletRequest request, @RequestBody FriendRequestRegisterationDTO friendRequestRegisterationDTO){
-        String email = JWTTools.getUserEmailByJWT(request);
-        Map<String, String> response = new HashMap<>();
-        Account account = null;
-        if(email != null){
-            account = accountService.getAccountWithDetails(email);
-        }
-        FriendRequest friendRequest = new FriendRequest();
-        if(account != null){
-            friendRequest.setRequestSenderUserName(account.getUserName());
-            friendRequest.setRequestReceiverUserName(friendRequestRegisterationDTO.getRequestReceiverUserName());
-            friendRequestService.addFriendRequest(friendRequest);
-
-            response.put("message", "request successfully sent");
-            response.put("statusCode", HttpStatus.CREATED.value()+"");
-            response.put("status", HttpStatus.CREATED.name());
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        }
-        response.put("message", "You have already sent friend request");
-        response.put("statusCode", HttpStatus.BAD_REQUEST.value()+"");
-        response.put("status", HttpStatus.BAD_REQUEST.name());
-        return ResponseEntity.badRequest().body(response);
+    public ResponseEntity<FriendRequest> sendFriendRequest(HttpServletRequest request, @RequestBody FriendRequestRegisterationDTO friendRequestRegisterationDTO){
+       return ResponseEntity
+               .ok()
+               .body(friendRequestService.addFriendRequest(request, friendRequestRegisterationDTO));
     }
 
     @PostMapping("accept")
