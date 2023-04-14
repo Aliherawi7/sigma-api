@@ -44,24 +44,34 @@ public class FriendRequestService {
     * add a new friend request to the database for the receiver account and create a notification
     * for the receiver account
     * */
-    public void addFriendRequest(FriendRequest friendRequest){
-        if(friendRequest.getRequestReceiverUserName().equalsIgnoreCase(friendRequest.getRequestSenderUserName()))
+    public FriendRequest addFriendRequest(HttpServletRequest request, FriendRequestRegisterationDTO friendRequestRegisterationDTO){
+        String email = JWTTools.getUserEmailByJWT(request);
+        String username = accountService.getAccount(email).getUserName();
+        if(!username.equalsIgnoreCase(friendRequestRegisterationDTO.getRequestSenderUserName()))
+            throw new InvalidParameterException("Invalid sender username");
+        if(friendRequestRegisterationDTO.getRequestReceiverUserName()
+                .equalsIgnoreCase(friendRequestRegisterationDTO.getRequestSenderUserName())){
             throw new InvalidParameterException("Invalid receiver username");
+        }
+
         if(friendRequestRepository.
                 findByRequestReceiverUserNameAndRequestSenderUserName(
-                        friendRequest.getRequestReceiverUserName(),
-                        friendRequest.getRequestSenderUserName()) != null){
+                        friendRequestRegisterationDTO.getRequestReceiverUserName(),
+                        friendRequestRegisterationDTO.getRequestSenderUserName()) != null){
             throw new InvalidParameterException("You have already sent friend request");
         }
-        if(accountService.isFriend(friendRequest.getRequestSenderUserName(), friendRequest.getRequestReceiverUserName())){
+        if(accountService.isFriend(friendRequestRegisterationDTO.getRequestSenderUserName(), friendRequestRegisterationDTO.getRequestReceiverUserName())){
             throw new InvalidParameterException("You are already friends together");
         }
+        FriendRequest friendRequest = new FriendRequest();
+        friendRequest.setRequestSenderUserName(friendRequestRegisterationDTO.getRequestSenderUserName());
+        friendRequest.setRequestReceiverUserName(friendRequestRegisterationDTO.getRequestReceiverUserName());
         Notification notification = new Notification();
         notification.setTitle("Friend request");
         notification.setMessage("You have a new friend request from @" + friendRequest.getRequestSenderUserName());
         notification.setUserName(friendRequest.getRequestReceiverUserName());
         notificationService.addNotification(notification);
-        friendRequestRepository.save(friendRequest);
+        return friendRequestRepository.save(friendRequest);
     }
 
     /*
