@@ -14,7 +14,6 @@ import com.herawi.sigma.models.Role;
 import com.herawi.sigma.repositories.AccountRepository;
 import com.herawi.sigma.utils.JWTTools;
 import com.herawi.sigma.utils.PaginationUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -252,12 +251,14 @@ public class AccountService implements UserDetailsService {
      * */
     public void addAsFriend(HttpServletRequest request, String userName) {
         String email = JWTTools.getUserEmailByJWT(request);
+        LOGGER.info(email);
         Account account = accountRepository.findByEmail(email);
         Account targetAccount = accountRepository.findByUserName(userName);
         if (account == null || targetAccount == null)
             throw new AccountNotFoundException("invalid username! account not found");
         account.addAccountToFriends(targetAccount);
-        targetAccount.getFriends().add(account);
+        targetAccount.addAccountToFriends(account);
+        LOGGER.info(email, userName);
         accountRepository.save(account);
         accountRepository.save(targetAccount);
     }
