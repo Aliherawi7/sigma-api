@@ -3,9 +3,7 @@ package com.herawi.sigma;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.herawi.sigma.dto.AccountDTO;
 import com.herawi.sigma.dto.AccountRegistrationRequest;
-import com.herawi.sigma.models.Account;
 import com.herawi.sigma.models.Message;
-import com.herawi.sigma.repositories.AccountRepository;
 import com.herawi.sigma.services.AccountService;
 import com.herawi.sigma.services.MessageService;
 import org.springframework.boot.CommandLineRunner;
@@ -14,16 +12,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.persistence.TemporalType;
 import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SpringBootApplication
