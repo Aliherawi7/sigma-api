@@ -6,10 +6,8 @@ import com.herawi.sigma.constants.Gender;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(
@@ -39,7 +37,7 @@ public class Account {
     private Date lockTime;
     private String location;
     @ManyToMany(fetch =FetchType.EAGER)
-    private Collection<Account> friends = new HashSet<>();
+    private Set<Account> friends = new LinkedHashSet<>();
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -190,10 +188,12 @@ public class Account {
     }
 
     public Collection<Account> getFriends() {
-        return friends;
+        return friends.stream()
+                .sorted(Comparator.comparing(Account::getUserName))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public void setFriends(Collection<Account> friends) {
+    public void setFriends(Set<Account> friends) {
         this.friends = friends;
     }
 
