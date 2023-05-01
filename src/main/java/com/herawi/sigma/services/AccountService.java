@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.herawi.sigma.dto.AccountDTO;
 import com.herawi.sigma.dto.AccountRegistrationRequest;
+import com.herawi.sigma.dto.PageContainerDTO;
 import com.herawi.sigma.dto.RegistrationResponse;
 import com.herawi.sigma.exceptions.AccountNotFoundException;
 import com.herawi.sigma.exceptions.CredentialException;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -45,7 +47,7 @@ public class AccountService implements UserDetailsService {
             BCryptPasswordEncoder bCryptPasswordEncoder,
             FileStorageService fileStorageService,
             AccountDTOMapper accountDTOMapper
-            ) {
+    ) {
         this.accountRepository = accountRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.fileStorageService = fileStorageService;
@@ -161,7 +163,7 @@ public class AccountService implements UserDetailsService {
         return false;
     }
 
-    public boolean deleteAccount(String email, String password) throws Exception {
+    public boolean deleteAccount(String email, String password) {
         if (!accountRepository.existsAccountByEmail(email)) {
             throw new AccountNotFoundException("account not found with the provided email");
         }
@@ -192,10 +194,10 @@ public class AccountService implements UserDetailsService {
 
     /* gives all the accounts with pagination */
 
-    public List<AccountDTO> getAllAccountWithPagination(int offset, int pageSize){
-        Page<Account> accountS = accountRepository.findAll(PageRequest.of(offset-1, pageSize));
-        return accountS.stream().map(accountDTOMapper).collect(Collectors.toList());
-
+    public PageContainerDTO<AccountDTO> getAllAccountWithPagination(int offset, int pageSize) {
+        Page<Account> accountS = accountRepository.findAll(PageRequest.of(offset - 1, pageSize));
+        return new PageContainerDTO<>(accountRepository.count(),
+                accountS.stream().map(accountDTOMapper).collect(Collectors.toList()));
     }
 
     /*
@@ -203,23 +205,23 @@ public class AccountService implements UserDetailsService {
      * */
     public AccountDTO getAccount(String email) {
         Account account = accountRepository.findByEmail(email);
-        if(account == null){
+        if (account == null) {
             throw new AccountNotFoundException("account not found with the provided email");
         }
         return accountDTOMapper.apply(account);
     }
 
     /* return account by userName */
-    public AccountDTO getAccountByUserName(String userName)  {
+    public AccountDTO getAccountByUserName(String userName) {
         Account account = accountRepository.findByUserName(userName);
-        if(account == null){
+        if (account == null) {
             throw new AccountNotFoundException("account not found with the provided username");
         }
         return accountDTOMapper.apply(account);
     }
 
     /* check if there is an account with provided username */
-    public boolean isAccountExistByUsername(String username){
+    public boolean isAccountExistByUsername(String username) {
         return accountRepository.existsAccountByUserName(username.trim().toLowerCase());
     }
 
@@ -236,7 +238,7 @@ public class AccountService implements UserDetailsService {
     }
 
     /* get profile picture of the provided account*/
-    public String getProfilePictureUrl(String userName){
+    public String getProfilePictureUrl(String userName) {
         return getAccountByUserName(userName).getProfilePictureUrl();
     }
 
@@ -264,16 +266,16 @@ public class AccountService implements UserDetailsService {
     }
 
     /*
-    * add account as friend with ids this is for test purpose
-    *  */
+     * add account as friend with ids this is for test purpose
+     *  */
 
-    public void addAsFriendById(String currentUsername, String tobeFriendUsername){
+    public void addAsFriendById(String currentUsername, String tobeFriendUsername) {
         Account currentAccount = accountRepository.findByUserName(currentUsername.toLowerCase());
         Account tobeFriendAccount = accountRepository.findByUserName(tobeFriendUsername);
-        if(currentAccount == null || tobeFriendAccount == null){
+        if (currentAccount == null || tobeFriendAccount == null) {
             throw new AccountNotFoundException("account not found with provided id");
         }
-        if(!currentUsername.equalsIgnoreCase(tobeFriendUsername)){
+        if (!currentUsername.equalsIgnoreCase(tobeFriendUsername)) {
             currentAccount.addAccountToFriends(tobeFriendAccount);
             tobeFriendAccount.addAccountToFriends(currentAccount);
             accountRepository.save(tobeFriendAccount);
@@ -281,6 +283,7 @@ public class AccountService implements UserDetailsService {
         }
 
     }
+
     /*
      * check if someone is friend with target account
      * */
@@ -293,10 +296,10 @@ public class AccountService implements UserDetailsService {
     }
 
     /*
-    * get all friends of the target account
-    * */
+     * get all friends of the target account
+     * */
 
-    public List<AccountDTO> getAllFriends(String userName){
+    public List<AccountDTO> getAllFriends(String userName) {
         return accountRepository
                 .findByUserName(userName)
                 .getFriends()
@@ -306,17 +309,25 @@ public class AccountService implements UserDetailsService {
     }
 
     /*
-    * get all friends with pagination
-    * */
+     * get all friends with pagination
+     * */
 
-    public List<AccountDTO> getAllFriendsWithPagination(String username, int offset, int pageSize){
+    public PageContainerDTO<AccountDTO> getAllFriendsWithPagination(String username, int offset, int pageSize) {
+        // this should be optimised
         List<AccountDTO> friends = getAllFriends(username);
         PaginationUtils.Paginate paginate = PaginationUtils.getStartAndEndPoint(friends.size(), offset, pageSize);
-        return friends.subList(paginate.start, paginate.end);
+        if(paginate == null){
+            return new PageContainerDTO<>(friends.size(), new ArrayList<>());
+        }
+        LOGGER.info(paginate.start + " : " + paginate.end);
+        return new PageContainerDTO<>(
+                friends.size(),
+                new LinkedHashSet<>(friends.subList(paginate.start, paginate.end))
+        );
     }
 
     /* simple  search accounts by name and last name */
-    public List<AccountDTO> getAccountDOTsByName(String keyword, int offset, int pageSize){
+    public List<AccountDTO> getAccountDOTsByName(String keyword, int offset, int pageSize) {
         String[] keys = keyword.split(" ");
         String firstName = keys[0];
         String lastName = keys.length > 1 ? keys[1] : "";
@@ -325,6 +336,7 @@ public class AccountService implements UserDetailsService {
                 .map(accountDTOMapper)
                 .collect(Collectors.toList());
         PaginationUtils.Paginate paginate = PaginationUtils.getStartAndEndPoint(accountDTOList.size(), offset, pageSize);
+
         return accountDTOList.subList(paginate.start, paginate.end);
     }
 
