@@ -4,11 +4,15 @@ public class PaginationUtils {
 
     public static Paginate getStartAndEndPoint(int listSize, int offset, int pageSize){
         int start, end;
-        end = (offset * pageSize) < listSize ? (offset * pageSize) : listSize;
-        start = (end - pageSize) < 0 ? 0 : end - pageSize;
-        Paginate paginate = new Paginate(start, end);
 
-        return paginate;
+        int calc = offset * pageSize;
+
+        end = Math.min((offset * pageSize), listSize);
+        if(calc - pageSize > listSize){
+            return null;
+        }
+        start = Math.max((pageSize * (offset-1)), 0);
+        return new Paginate(start, end);
     }
 
     public static class Paginate{
