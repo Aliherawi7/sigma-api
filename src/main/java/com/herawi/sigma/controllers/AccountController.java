@@ -2,6 +2,7 @@ package com.herawi.sigma.controllers;
 
 import com.herawi.sigma.dto.AccountDTO;
 import com.herawi.sigma.dto.AccountRegistrationRequest;
+import com.herawi.sigma.dto.PageContainerDTO;
 import com.herawi.sigma.services.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,7 @@ public class AccountController {
         return ResponseEntity.ok().body(accountInfo);
     }
     @GetMapping("/pagination/{offset}/{pageSize}")
-    public ResponseEntity<?> getAll(@PathVariable int offset, @PathVariable int pageSize){
+    public ResponseEntity<PageContainerDTO<AccountDTO>> getAll(@PathVariable int offset, @PathVariable int pageSize){
         return ResponseEntity.ok().body(accountService.getAllAccountWithPagination(offset, pageSize));
     }
 
