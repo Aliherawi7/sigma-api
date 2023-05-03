@@ -54,7 +54,7 @@ public class SigmaApplication {
 				Message[] messagesArray = objectMapper.readValue(messagesJsonUrl, Message[].class);
 				AtomicInteger atomicInteger = new AtomicInteger(0);
 				Arrays.asList(messagesArray).forEach(item -> {
-					item.setDateTime(item.getDateTime().plusMinutes(atomicInteger.incrementAndGet()));
+					item.setDateTime(item.getDateTime().minusMinutes(atomicInteger.incrementAndGet()));
 					messageService.addMessage(item);
 				});
 
