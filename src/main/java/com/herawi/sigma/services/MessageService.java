@@ -38,6 +38,7 @@ public class MessageService {
         message.setText(messageRequestDO.getMessage());
         message.setSenderProfileImageUrl(accountService.getProfilePictureUrl(account.getUserName()));
         message.setReceiverProfileImageUrl(messageRequestDO.getUsername());
+      //  message.setDateTime(messageRequestDO.getSentDateTime());
         return messageRepository.save(message);
     }
 
