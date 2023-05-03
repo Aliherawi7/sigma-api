@@ -4,7 +4,6 @@ import com.herawi.sigma.dto.MessageRequestDO;
 import com.herawi.sigma.models.Message;
 import com.herawi.sigma.services.MessageService;
 import com.herawi.sigma.utils.JWTTools;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
