@@ -1,13 +1,14 @@
 package com.herawi.sigma.models;
 
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 public class Message  implements Comparable<Message>{
     @Id
+    @SequenceGenerator(sequenceName = "message_sequence", name = "message_sequence", initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "message_sequence")
     private long id;
     private String text;
     private String senderUsername;

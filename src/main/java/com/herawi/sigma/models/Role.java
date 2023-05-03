@@ -1,12 +1,12 @@
 package com.herawi.sigma.models;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Role {
     @Id
+    @SequenceGenerator(sequenceName = "role_sequence", name = "role_sequence", initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "role_sequence")
     private int id;
     @Column(nullable = false)
     private String name;
